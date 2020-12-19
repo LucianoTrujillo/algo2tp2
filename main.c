@@ -9,7 +9,7 @@
 void test() {
     pa2m_nuevo_grupo("Se testea iinsta");
     pa2m_afirmar(4 < 5, "3 es menor que 5")
-    pa2m_mostrar_reporte();
+        pa2m_mostrar_reporte();
 }
 
 int main() {
