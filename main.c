@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "pa2mm.h"
+#include "interfaz/interfaz.h"
 
 /*
  * Pruebas del TP2
@@ -14,6 +15,7 @@ void test() {
 
 int main() {
     test();
-    printf("Hello, World!\n");
+    char* opciones[10] = {"holaaaaa", "como", "va"};
+    mostrar_opciones(opciones, 3, 1);
     return 0;
 }
