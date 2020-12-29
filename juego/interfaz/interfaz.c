@@ -42,7 +42,7 @@ void delay(int milisegundos)
 }
 
 void mostrar_barra_carga(int maximos_milisegundos_carga){
-    srand(time(0));
+    srand((unsigned int)time((time_t*)0));
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     int ancho_media_pantalla = (int)((w.ws_col - ANCHO_BARRA_CARGA) / 2);
@@ -113,14 +113,14 @@ void mostrar_mensaje(char* mensaje, bool mostrar_continuar){
 
     char texto[LINEAS_DISPLAY][MAX_CARACTERES_LINEA_DISPLAY + 1];
 
-    int cant_lineas = 1 + (strlen(mensaje) / MAX_CARACTERES_LINEA_DISPLAY);
+    int cant_lineas = (int)(1 + (strlen(mensaje) / MAX_CARACTERES_LINEA_DISPLAY));
 
     for(int i = 0; i < LINEAS_DISPLAY; i++){
         strcpy(texto[i], "\0");
     }
 
     for(int i = 0; i <= cant_lineas; i++){
-        int cant_letras_linea = strlen(mensaje) > MAX_CARACTERES_LINEA_DISPLAY ? MAX_CARACTERES_LINEA_DISPLAY : strlen(mensaje);
+        int cant_letras_linea = (int)(strlen(mensaje) > MAX_CARACTERES_LINEA_DISPLAY ? MAX_CARACTERES_LINEA_DISPLAY : strlen(mensaje));
         strncpy(texto[i], mensaje, cant_letras_linea);
         texto[i][cant_letras_linea] = '\0';
         mensaje+=cant_letras_linea;
@@ -171,10 +171,11 @@ void mostrar_mensaje(char* mensaje, bool mostrar_continuar){
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
 }
 
-void obtener_input(char* c){
+void obtener_input(int* c){
     system ("/bin/stty raw");
     *c = getchar();
     system ("/bin/stty cooked");
+
 }
 
 void mostrar_mensaje_fluido(char* mensaje){
@@ -195,7 +196,7 @@ void mostrar_mensaje_fluido(char* mensaje){
         else
             delay(VELOCIDAD_LETRAS);
     }
-    char c;
+    int c;
     while((c = getchar()) != 10);
 }
 

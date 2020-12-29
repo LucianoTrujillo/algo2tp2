@@ -7,4 +7,4 @@
 
 void mostrar_opciones(char* opciones[10], int cantidad_opciones, int opcion_seleccionada);
 
-#endif //TP2_INTERFAZ_H
+#endif /*TP2_INTERFAZ_H*/

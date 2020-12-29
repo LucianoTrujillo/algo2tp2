@@ -1,4 +1,6 @@
 .idea/
 CMakeLists.txt
 cmake-build-debug/
-
+tp2.dSYM/
+.vscode/
+.DS_Store

@@ -34,7 +34,7 @@ void __pa2m_atajarse(void (*handler)(int)) {
 void __pa2m_morir(int signum) {
     if (__pa2m_prueba_actual)
         printf(ROJO "\n\nERROR MIENTRAS SE EJECUTABA LA PRUEBA: " AMARILLO "'%s'\n\n" BLANCO, __pa2m_prueba_actual);
-    else printf(ROJO "\n\nFINALIZACION ANORMAL DE LAS PRUEBAS\n\n"BLANCO);
+    else printf(ROJO "\n\nFINALIZACION ANORMAL DE LAS PRUEBAS\n\n" BLANCO);
     fflush(stdout);
     __pa2m_atajarse(SIG_DFL);
 }
