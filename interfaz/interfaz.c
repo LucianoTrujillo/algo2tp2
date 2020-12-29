@@ -20,6 +20,16 @@
 #define DELAY_CARGA 150
 #define MILISEGUNDOS_EN_SEGUNDO 1000
 
+#define ANCHO_DISPLAY 80
+#define ALTO_DISPLAY 25
+#define LINEAS_DISPLAY 10
+#define MAX_CARACTERES_LINEA_DISPLAY 55
+#define PADDING_DISPLAY 2
+#define VELOCIDAD_LETRAS 25
+#define VELOCIDAD_PAUSAS 400
+
+#define MAX_OPCIONES 10
+
 void delay(int milisegundos)
 {
     long pausa;
@@ -65,6 +75,7 @@ void mostrar_opcion(char* opcion, bool seleccionada){
     int ancho_media_pantalla = (int)((w.ws_col - ANCHO_OPCION) / 2);
     int padding_opcion = (int)((ANCHO_OPCION - 2 * ANCHO_BORDE - strlen(opcion)) / 2);
 
+    printf(BLANCO);
     if(seleccionada){
         printf(AMARILLO);
         printf("%*s", ancho_media_pantalla, " ");
@@ -90,63 +101,72 @@ void mostrar_opcion(char* opcion, bool seleccionada){
     }
 }
 
-void mostrar_mensaje(char* mensaje){
+void mostrar_mensaje(char* mensaje, bool mostrar_continuar){
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
-    int ancho_media_pantalla = (int)((w.ws_col - 80) / 2);
-    int alto_media_pantalla = (int)((w.ws_row - 25) / 2);
+    int ancho_media_pantalla = (int)((w.ws_col - ANCHO_DISPLAY) / 2);
+    int alto_media_pantalla = (int)((w.ws_row - ALTO_DISPLAY) / 2);
 
-    const int lineas = 10;
-    const int max_tamanio_linea = 36;
-
-    if(!mensaje || !*mensaje || strlen(mensaje) > (lineas * max_tamanio_linea)){
+    if(!mensaje || !*mensaje || strlen(mensaje) > (LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY)){
         return;
     }
 
-    char texto[lineas][max_tamanio_linea + 1];
+    char texto[LINEAS_DISPLAY][MAX_CARACTERES_LINEA_DISPLAY + 1];
 
-    int cant_lineas = 1 + (strlen(mensaje) / max_tamanio_linea);
+    int cant_lineas = 1 + (strlen(mensaje) / MAX_CARACTERES_LINEA_DISPLAY);
 
-    for(int i = 0; i < lineas; i++){
+    for(int i = 0; i < LINEAS_DISPLAY; i++){
         strcpy(texto[i], "\0");
     }
 
     for(int i = 0; i <= cant_lineas; i++){
-        int cant_letras_linea = strlen(mensaje) > max_tamanio_linea ? max_tamanio_linea : strlen(mensaje);
+        int cant_letras_linea = strlen(mensaje) > MAX_CARACTERES_LINEA_DISPLAY ? MAX_CARACTERES_LINEA_DISPLAY : strlen(mensaje);
         strncpy(texto[i], mensaje, cant_letras_linea);
         texto[i][cant_letras_linea] = '\0';
         mensaje+=cant_letras_linea;
     }
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
-    printf(
-       "                      ________________________________________________\n "
-        "                    /                                                \\ \n"
-        "                    |    _________________________________________     |\n"
-        "                    |   |                                         |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |  %-38s |    |\n"
-        "                    |   |_________________________________________|    |\n"
-        "                    |                                                  |\n"
-        "                    \\_________________________________________________/\n"
-        "                           \\___________________________________/\n"
-        "                         _________________________________________\n"
-        "                    _-'-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-. -- - ` - _\n"
-        "                  -_'_-'.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.--. .-.-.`-_\n"
-        "                _-'.-.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-`__`. .-.-.-.`-\n"
-        "               -'.-.-.-.-. .-----.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-----. .-.-.-.-.`-_\n"
-        "            _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.`-_\n"
-        "            :-------------------------------------------------------------------------:\n"
-        "           `---._.-------------------------------------------------------------._.---'\n",
-        texto[0], texto[1], texto[2], texto[3], texto[4], texto[5], texto[6], texto[7], texto[8], texto[9]
-                    );
+
+    printf("%*s", ancho_media_pantalla, " ");
+       printf("           ____________________________________________________________________\n ");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "         /                                                                    \\ \n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "          |    _____________________________________________________________   |\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "          |   |                                                            |   |\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       for(int i = 0; i < LINEAS_DISPLAY; i++){
+           printf( "          |   |  %-*s |   |\n",MAX_CARACTERES_LINEA_DISPLAY + PADDING_DISPLAY, texto[i]);
+           printf("%*s", ancho_media_pantalla, " ");
+       }
+       if(mostrar_continuar) {
+           printf("          |   |                       " AMARILLO "Presione Enter ↵  Para Continuar..." BLANCO "  |   |\n");
+           printf("%*s", ancho_media_pantalla, " ");
+       }
+       printf( "          |   |____________________________________________________________|   |\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "          |                                                                    |\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "          \\____________________________________________________________________/\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "                           \\___________________________________/\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "                         _________________________________________\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "                    _-'-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-. -- - ` - _\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "                  -_'_-'.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.--. .-.-.`-_\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "                _-'.-.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-`__`. .-.-.-.`-\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "               -'.-.-.-.-. .-----.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-----. .-.-.-.-.`-_\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "            _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.`-_\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "            :-------------------------------------------------------------------------:\n");
+        printf("%*s", ancho_media_pantalla, " ");
+       printf( "           `---._.-------------------------------------------------------------._.---'\n");
 
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
 }
@@ -157,7 +177,30 @@ void obtener_input(char* c){
     system ("/bin/stty cooked");
 }
 
-void mostrar_opciones(char* opciones[10], int cantidad_opciones, int opcion_seleccionada){
+void mostrar_mensaje_fluido(char* mensaje){
+
+    if(!mensaje || !*mensaje || strlen(mensaje) > (LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY)){
+        return;
+    }
+
+    char temp[strlen(mensaje) + 1];
+    for(int i = 0; i <= strlen(mensaje); i++)
+        temp[i] = '\0';
+
+    for(int i = 0; i < strlen(mensaje); i++){
+        temp[i] = mensaje[i];
+        mostrar_mensaje(temp, i + 1 == strlen(mensaje));
+        if(strchr(".,:;!?¡¿\t", temp[i]))
+            delay(VELOCIDAD_PAUSAS);
+        else
+            delay(VELOCIDAD_LETRAS);
+    }
+    char c;
+    while((c = getchar()) != 10);
+}
+
+
+void mostrar_opciones(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     system("clear");
@@ -170,16 +213,12 @@ void mostrar_opciones(char* opciones[10], int cantidad_opciones, int opcion_sele
 
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
 
-    mostrar_mensaje("");
-    mostrar_mensaje("\0");
-    mostrar_mensaje(NULL);
-    mostrar_mensaje("a");
-    mostrar_mensaje("hola");
-    mostrar_mensaje("1 2 3 4 5 6 7 8 9 10 11 12 13 141 51 617 18 19 202 12 22 3 242 52 62 72 82 93 0 31 32 33 34 3536 47 3 839 40 ");
-    mostrar_mensaje("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue");
-    mostrar_mensaje("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue pero por suerte ya estoy de nuevo. Vivito y coleante como de costumbre, no vaya a ser que me mura jajaja pero anda por suerte todo re bien, un gustazo de verdad. Vos en que andas? todo bien? jajajaja. No bueno chau nos vemos! abzo!");
-
-    mostrar_mensaje("On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.");
+   // mostrar_mensaje_fluido("a");
+    //mostrar_mensaje_fluido("hola");
+    //mostrar_mensaje_fluido("1 2 3 4 5 6 7 8 9 10 11 12 13 141 51 617 18 19 202 12 22 3 242 52 62 72 82 93 0 31 32 33 34 3536 47 3 839 40 ");
+    mostrar_mensaje_fluido("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue");
+    mostrar_mensaje_fluido("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue pero por suerte ya estoy de nuevo. Vivito y coleante como de costumbre, no vaya a ser que me mura jajaja pero anda por suerte todo re bien, un gustazo de verdad. Vos en que andas? todo bien? jajajaja. No bueno chau nos vemos! abzo!");
+   mostrar_mensaje_fluido("On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.");
 }
 
 
