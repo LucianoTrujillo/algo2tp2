@@ -2,6 +2,7 @@
 #define __JUEGO_H__
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "lista.h"
 
 #define MAX_NOMBRE 100
@@ -42,6 +43,7 @@ typedef struct heap {
 typedef struct juego {
   heap_t* gimnasios;
   personaje_t personaje;
+  bool simulacion;
 } juego_t;
 
 int jugar();
