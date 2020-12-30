@@ -10,4 +10,5 @@
 void mostrar_opciones(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
 int elegir_opcion(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
 void mostrar_mensaje_fluido(char* mensaje);
+
 #endif /*TP2_INTERFAZ_H*/

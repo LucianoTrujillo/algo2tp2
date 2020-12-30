@@ -12,7 +12,7 @@
 
 #define AMARILLO "\x1b[33;1m"
 #define BLANCO "\x1b[37;1m"
-#define ANCHO_OPCION 32
+#define ANCHO_OPCION 42
 #define ALTO_OPCION 3
 #define ANCHO_BORDE 1
 #define ANCHO_BARRA_CARGA 100
@@ -81,30 +81,31 @@ void mostrar_opcion(char* opcion, bool seleccionada){
     ioctl(0, TIOCGWINSZ, &w);
     int ancho_media_pantalla = (int)((w.ws_col - ANCHO_OPCION) / 2);
     int padding_opcion = (int)((ANCHO_OPCION - 2 * ANCHO_BORDE - strlen(opcion)) / 2);
-
+    int padding_extra = strlen(opcion) % 2 != 0;
+  
     printf(BLANCO);
     if(seleccionada){
         printf(AMARILLO);
         printf("%*s", ancho_media_pantalla, " ");
-        printf("╔══════════════════════════════╗\n");
+        printf("╔════════════════════════════════════════╗\n");
         printf("%*s", ancho_media_pantalla, " ");
         printf("║%*s%s%*s║\n",
                padding_opcion, "",
                opcion,
-               padding_opcion, "");
+               padding_opcion + padding_extra, "");
         printf("%*s", ancho_media_pantalla, " ");
-        printf("╚══════════════════════════════╝\n");
+        printf("╚════════════════════════════════════════╝\n");
         printf(BLANCO);
     } else {
         printf("%*s", ancho_media_pantalla, " ");
-        printf("┌──────────────────────────────┐\n");
+        printf("┌────────────────────────────────────────┐\n");
         printf("%*s", ancho_media_pantalla, " ");
         printf("│%*s%s%*s│\n",
                padding_opcion, "",
                opcion,
-               padding_opcion, "");
+               padding_opcion + padding_extra, "");
         printf("%*s", ancho_media_pantalla, " ");
-        printf("└──────────────────────────────┘\n");
+        printf("└────────────────────────────────────────┘\n");
     }
 }
 
@@ -179,9 +180,9 @@ void mostrar_mensaje(char* mensaje, bool mostrar_continuar){
 }
 
 void obtener_input(int* c){
-    system ("/bin/stty raw");
+    system("/bin/stty raw");
     *c = getchar();
-    system ("/bin/stty cooked");
+    system("/bin/stty cooked");
 
 }
 
@@ -248,12 +249,12 @@ int elegir_opcion(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcio
 				break;
       }
       case CANCELAR: {
-        system ("/bin/stty cooked");
         exit(-1);
 			}
     }
     mostrar_opciones(opciones, cantidad_opciones, opcion_seleccionada);
   }
+
   return opcion_seleccionada;
 }
 

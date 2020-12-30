@@ -2,6 +2,7 @@
 #include "juego.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define INGRESA_ENTRENADOR_PRINCIPAL 0
 #define AGREGA_GIMNASIO 1
@@ -21,6 +22,8 @@
 #define REINTENTAR_GIMNASIO 1
 #define FINALIZAR_PARTIDA 2
 
+#define MAX_MENSAJE 200
+
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
 
@@ -29,11 +32,12 @@ menu_t menu_inicio(juego_t* juego){
     "Ingresar entrenador principal",
     "Agregar un gimnasio",
     "Comenzar la partida",
-    "Simular la partida" };
+    "Simular la partida.." };
 
   int opcion_elegida = elegir_opcion(opciones, 4, 0);
 
-  char msj[30] = "\0";
+  char msj[MAX_MENSAJE];
+  memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
   mostrar_mensaje_fluido(msj);
 
@@ -62,11 +66,12 @@ menu_t menu_gym(juego_t* juego){
     "Ver personaje y pokedex",
     "Ver gimasio a combatir",
     "Cambiar Pokemon de batalla",
-    "Ir a la próxima batalla" };
+    "Ir a proxima batalla" };
 
   int opcion_elegida = elegir_opcion(opciones, 4, 0);
 
-  char msj[30] = "\0";
+  char msj[MAX_MENSAJE];
+  memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
   mostrar_mensaje_fluido(msj);
 
@@ -109,14 +114,15 @@ menu_t menu_batalla(juego_t* juego){
 menu_t menu_victoria(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Cambiar Pokemon de batalla",
-    "Ir a próximo gimnasio"
+    "Ir a proximo gimnasio"
     "Robar pókemon de lider"};
 
   int cantidad_opciones = 3;
 
   int opcion_elegida = elegir_opcion(opciones, cantidad_opciones, 0);
 
-  char msj[30] = "\0";
+  char msj[MAX_MENSAJE];
+  memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
   mostrar_mensaje_fluido(msj);
 
@@ -142,19 +148,20 @@ menu_t menu_victoria(juego_t* juego){
 menu_t menu_derrota(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Cambiar Pokemon de batalla",
-    "Reintentar el gimnasio"
+    "Reintentar el gimnasio",
     "Finalizar la partida" };
 
   int opcion_elegida = elegir_opcion(opciones, 3, 0);
 
-  char msj[30] = "\0";
+  char msj[MAX_MENSAJE];
+  memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
   mostrar_mensaje_fluido(msj);
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_DERROTA:
       /* misma Interfaz copadísima que usé para el inicio, DRY CODE PLEASE para el cambio de pokmeones de reserva a batallar y viceversa*/
-      return GYM;
+      return DERROTA;
       break;
     case REINTENTAR_GIMNASIO:
       /* Ir al gym again, quizá cambio los pokemones... */
@@ -169,7 +176,10 @@ menu_t menu_derrota(juego_t* juego){
 
 funcion_menu* const nuevo_menu[ CANT_MENUS ] = {
     menu_inicio,
-    menu_gym
+    menu_gym,
+    menu_batalla,
+    menu_victoria,
+    menu_derrota,
 };
 
 menu_t mostrar_menu( menu_t menu_actual, juego_t *juego ) {
@@ -184,8 +194,8 @@ int jugar(){
     menu_actual = mostrar_menu(menu_actual, juego);
   }
 
-  mostrar_mensaje_fluido("Muchas gracias por formar parte de esta hermosa aventura! Esperamos verte pronto...");
-  
+  mostrar_mensaje_fluido("Chau! Esperamos verte pronto...");
+
   return 0;
 }
 
