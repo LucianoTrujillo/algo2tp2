@@ -12,6 +12,9 @@
 
 #define AMARILLO "\x1b[33;1m"
 #define BLANCO "\x1b[37;1m"
+#define TITULO "\x1b[37;4m"
+#define CERRAR_TITULO "\x1b[37;0m"
+
 #define ANCHO_OPCION 42
 #define ALTO_OPCION 3
 #define ANCHO_BORDE 1
@@ -209,13 +212,18 @@ void mostrar_mensaje_fluido(char* mensaje){
 }
 
 
-void mostrar_opciones(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
+void mostrar_opciones(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     system("clear");
     int alto_media_pantalla = (int)((w.ws_row - ALTO_OPCION * cantidad_opciones) / 2);
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
-    printf(BLANCO);
+    int ancho_media_pantalla = (int)((w.ws_col - strlen(menu)) / 2);
+    printf("%*s", ancho_media_pantalla, " ");
+    printf(TITULO);
+    printf("%s\n\n\n", menu);
+    printf(CERRAR_TITULO);
+
     for(int i = 0; i < cantidad_opciones; i++){
         mostrar_opcion(opciones[i], i == opcion_seleccionada);
     }
@@ -231,9 +239,9 @@ void mostrar_opciones(char* opciones[MAX_OPCIONES], int cantidad_opciones, int o
 }
 
 
-int elegir_opcion(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
+int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
   int c = 0;
-  mostrar_opciones(opciones, cantidad_opciones, opcion_seleccionada);
+  mostrar_opciones(menu, opciones, cantidad_opciones, opcion_seleccionada);
 
   while(c != ENTER && c != CANCELAR){
     obtener_input(&c);
@@ -252,7 +260,7 @@ int elegir_opcion(char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcio
         exit(-1);
 			}
     }
-    mostrar_opciones(opciones, cantidad_opciones, opcion_seleccionada);
+    mostrar_opciones(menu, opciones, cantidad_opciones, opcion_seleccionada);
   }
 
   return opcion_seleccionada;

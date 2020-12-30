@@ -34,7 +34,7 @@ menu_t menu_inicio(juego_t* juego){
     "Comenzar la partida",
     "Simular la partida" };
 
-  int opcion_elegida = elegir_opcion(opciones, 4, 0);
+  int opcion_elegida = elegir_opcion("INICIO", opciones, 4, 0);
 
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
@@ -68,7 +68,7 @@ menu_t menu_gym(juego_t* juego){
     "Cambiar Pokemon de batalla",
     "Ir a proxima batalla" };
 
-  int opcion_elegida = elegir_opcion(opciones, 4, 0);
+  int opcion_elegida = elegir_opcion("GIMNASIO", opciones, 4, 0);
 
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
@@ -119,7 +119,7 @@ menu_t menu_victoria(juego_t* juego){
 
   int cantidad_opciones = 3;
 
-  int opcion_elegida = elegir_opcion(opciones, cantidad_opciones, 0);
+  int opcion_elegida = elegir_opcion("VICTORIA", opciones, cantidad_opciones, 0);
 
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
@@ -151,7 +151,7 @@ menu_t menu_derrota(juego_t* juego){
     "Reintentar el gimnasio",
     "Finalizar la partida" };
 
-  int opcion_elegida = elegir_opcion(opciones, 3, 0);
+  int opcion_elegida = elegir_opcion("DERROTA", opciones, 3, 0);
 
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
@@ -174,7 +174,7 @@ menu_t menu_derrota(juego_t* juego){
   }
 }
 
-funcion_menu* const nuevo_menu[ CANT_MENUS ] = {
+funcion_menu* const nuevo_menu[CANT_MENUS] = {
     menu_inicio,
     menu_gym,
     menu_batalla,
@@ -182,7 +182,7 @@ funcion_menu* const nuevo_menu[ CANT_MENUS ] = {
     menu_derrota,
 };
 
-menu_t mostrar_menu( menu_t menu_actual, juego_t *juego ) {
+menu_t mostrar_menu(menu_t menu_actual, juego_t *juego) {
     return nuevo_menu[menu_actual](juego);
 }
 
