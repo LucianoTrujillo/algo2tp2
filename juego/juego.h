@@ -44,6 +44,6 @@ typedef struct juego {
   personaje_t personaje;
 } juego_t;
 
-
+int jugar();
 
 #endif /* __JUEGO_H__ */

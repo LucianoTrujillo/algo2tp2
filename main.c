@@ -13,7 +13,6 @@
 // }
 
 int main() {
-    juego_t juego;
-    juego.gimnasios = NULL;
+    jugar();
     return 0;
 }
