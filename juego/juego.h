@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "lista.h"
+#include "abb.h"
 
 #define MAX_NOMBRE 100
 #define PUNTOS_RECOMPENSA_COMBATE 1
@@ -12,18 +13,19 @@
 typedef int (*funcion_batalla)(void*, void*);
 
 typedef struct pokemon{
-int velocidad;
-int defensa;
-int ataque; 
+  char nombre[MAX_NOMBRE];
+  int velocidad;
+  int defensa;
+  int ataque; 
 } pokemon_t;
 
 typedef struct entrenador {
-  const char nombre[MAX_NOMBRE];
+  char nombre[MAX_NOMBRE];
   pokemon_t* pokemones;
 } entrenador_t;
 
 typedef struct gimnasio {
-  const char nombre[MAX_NOMBRE];
+  char nombre[MAX_NOMBRE];
   size_t dificultad;
   size_t batalla_id;
   entrenador_t lider;
@@ -31,9 +33,9 @@ typedef struct gimnasio {
 } gimnasio_t;
 
 typedef struct personaje {
-  const char nombre[MAX_NOMBRE];
-  pokemon_t* pokemones_reserva;
-  pokemon_t* pokemones_combate;
+  char nombre[MAX_NOMBRE];
+  abb_t* pokemones_reserva;
+  lista_t* pokemones_combate;
 } personaje_t;
 
 typedef struct heap {

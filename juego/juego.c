@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define INGRESA_ENTRENADOR_PRINCIPAL 0
 #define AGREGA_GIMNASIO 1
@@ -23,6 +24,46 @@
 #define FINALIZAR_PARTIDA 2
 
 #define MAX_MENSAJE 200
+#define MAX_NOMBRE_ARCHIVO 100
+
+#define ENTRENADOR_FORMATO_NOMBRE "E;%100[^\n]\n"
+#define FORMATO_POKEMON "P;%100[^;];%i;%i;%i\n"
+#define MODO_LECTURA "r"
+
+#define LECTURA_INCOMPLETA 2
+
+bool imprimir_pokemon(void* pokemon, void* extra){
+  printf("%s\n",((pokemon_t*)pokemon)->nombre);
+  return false;
+}
+
+int leer_entrenador_principal(juego_t* juego){
+  char nombre_archivo[MAX_NOMBRE_ARCHIVO];
+  printf("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
+  scanf("%s", nombre_archivo);
+  FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
+  
+  if(!archivo)
+    return ERROR;
+  
+  fscanf(archivo, ENTRENADOR_FORMATO_NOMBRE, juego->personaje.nombre);
+
+  pokemon_t* pokemon = malloc(sizeof(pokemon_t));
+  if(!pokemon)
+    return ERROR;
+
+  while(fscanf(archivo, FORMATO_POKEMON, pokemon->nombre, &(pokemon->velocidad), &(pokemon->ataque), &(pokemon->defensa)) != EOF){
+    arbol_insertar(juego->personaje.pokemones_reserva, pokemon);
+    pokemon = malloc(sizeof(pokemon_t));
+    if(!pokemon)
+      return ERROR;
+  }
+
+  fclose(archivo);
+
+  abb_con_cada_elemento(juego->personaje.pokemones_reserva, ABB_RECORRER_INORDEN, imprimir_pokemon, NULL);
+  return EXITO;
+}
 
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
@@ -43,7 +84,7 @@ menu_t menu_inicio(juego_t* juego){
 
   switch (opcion_elegida){
     case INGRESA_ENTRENADOR_PRINCIPAL:
-      /* agregar personaje principal medainte lectura de archivo */
+      leer_entrenador_principal(juego);
       return INICIO;
       break;
     case AGREGA_GIMNASIO:
@@ -186,12 +227,47 @@ menu_t mostrar_menu(menu_t menu_actual, juego_t *juego) {
     return nuevo_menu[menu_actual](juego);
 }
 
+int comparar_pokemones(void* pokemon_1, void* pokemon_2){
+  if(!pokemon_1 || !pokemon_2)
+    return 1;
+
+    /*HAY QUE AGARRAR LA ULTIAM VERSION DEL TP*/
+
+  return ((pokemon_t*)(pokemon_2))->velocidad - ((pokemon_t*)(pokemon_1))->velocidad;
+  //return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
+}
+
+void destruir_pokemon(void* pokemon){
+    free(pokemon);
+}
+
+int inicializar_juego(juego_t* juego){
+  juego->simulacion = false;
+  
+  memset(juego->personaje.nombre, '\0', MAX_NOMBRE);
+
+  juego->personaje.pokemones_reserva = arbol_crear(comparar_pokemones, destruir_pokemon);
+  if(!juego->personaje.pokemones_reserva)
+    return ERROR;
+  
+  juego->personaje.pokemones_combate = lista_crear();
+
+  if(!juego->personaje.pokemones_combate)
+    return ERROR;
+
+  juego->gimnasios = NULL; //falta inicializarle el heap postaa
+  return EXITO;
+}
+
 int jugar(){
   menu_t menu_actual = INICIO;
-  juego_t* juego = NULL;
+  juego_t juego;
+  int resultado = inicializar_juego(&juego);
+  if(resultado == ERROR)
+    return ERROR;
 
   while(menu_actual != FIN){
-    menu_actual = mostrar_menu(menu_actual, juego);
+    menu_actual = mostrar_menu(menu_actual, &juego);
   }
 
   mostrar_mensaje_fluido("Chau! Esperamos verte pronto...");
