@@ -32,7 +32,7 @@ menu_t menu_inicio(juego_t* juego){
     "Ingresar entrenador principal",
     "Agregar un gimnasio",
     "Comenzar la partida",
-    "Simular la partida.." };
+    "Simular la partida" };
 
   int opcion_elegida = elegir_opcion(opciones, 4, 0);
 
