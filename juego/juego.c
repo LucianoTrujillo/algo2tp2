@@ -26,13 +26,17 @@
 #define MAX_MENSAJE 200
 #define MAX_NOMBRE_ARCHIVO 100
 
-#define ENTRENADOR_FORMATO_NOMBRE "E;%100[^\n]\n"
-#define FORMATO_POKEMON "P;%100[^;];%i;%i;%i\n"
+#define ENTRENADOR_FORMATO_NOMBRE "%1[^;];%100[^\n]\n"
+#define FORMATO_POKEMON "%1[^;];%100[^;];%i;%i;%i\n"
 #define MODO_LECTURA "r"
-
+#define CHAR_ENTRENADOR "E"
+#define CHAR_POKEMON "P"
+#define CANTIDAD_LEIDOS_ENTRENADOR 2
+#define CANTIDAD_LEIDOS_POKEMON 5
 #define LECTURA_INCOMPLETA 2
 #define ERROR -1
 #define EXITO 0
+
 
 bool imprimir_pokemon(void* pokemon, void* extra){
   printf("%s\n",((pokemon_t*)pokemon)->nombre);
@@ -48,21 +52,33 @@ int leer_entrenador_principal(juego_t* juego){
   if(!archivo)
     return ERROR;
   
-  fscanf(archivo, ENTRENADOR_FORMATO_NOMBRE, juego->personaje.nombre);
+  char identificardor_linea[2];
+  int res = fscanf(archivo, ENTRENADOR_FORMATO_NOMBRE, identificardor_linea, juego->personaje.nombre);
+
+  if(res != CANTIDAD_LEIDOS_ENTRENADOR || strcmp(identificardor_linea, CHAR_ENTRENADOR) != 0){
+    return ERROR;
+  }
 
   pokemon_t* pokemon = malloc(sizeof(pokemon_t));
   if(!pokemon)
     return ERROR;
 
-  while(fscanf(archivo, FORMATO_POKEMON, pokemon->nombre, &(pokemon->velocidad), &(pokemon->ataque), &(pokemon->defensa)) != EOF){
+  while(fscanf(
+              archivo,
+              FORMATO_POKEMON,
+              identificardor_linea,
+              pokemon->nombre, 
+              &(pokemon->velocidad), 
+              &(pokemon->ataque), 
+              &(pokemon->defensa)) == CANTIDAD_LEIDOS_POKEMON &&
+              strcmp(identificardor_linea, CHAR_POKEMON) == 0){
+                  
     arbol_insertar(juego->personaje.pokemones_reserva, pokemon);
     pokemon = malloc(sizeof(pokemon_t));
     if(!pokemon)
       return ERROR;
   }
-
   fclose(archivo);
-
   abb_con_cada_elemento(juego->personaje.pokemones_reserva, ABB_RECORRER_INORDEN, imprimir_pokemon, NULL);
   return EXITO;
 }
