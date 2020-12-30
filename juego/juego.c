@@ -31,6 +31,8 @@
 #define MODO_LECTURA "r"
 
 #define LECTURA_INCOMPLETA 2
+#define ERROR -1
+#define EXITO 0
 
 bool imprimir_pokemon(void* pokemon, void* extra){
   printf("%s\n",((pokemon_t*)pokemon)->nombre);
@@ -231,10 +233,7 @@ int comparar_pokemones(void* pokemon_1, void* pokemon_2){
   if(!pokemon_1 || !pokemon_2)
     return 1;
 
-    /*HAY QUE AGARRAR LA ULTIAM VERSION DEL TP*/
-
-  return ((pokemon_t*)(pokemon_2))->velocidad - ((pokemon_t*)(pokemon_1))->velocidad;
-  //return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
+  return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
 }
 
 void destruir_pokemon(void* pokemon){

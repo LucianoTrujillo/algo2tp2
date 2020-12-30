@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+#define ERROR -1
+#define EXITO 0
+
 /*
     Crea un nodo con el elemento pasa por parámetro.
     El nuevo nodo apunta en siguiente a NULL.
@@ -224,9 +228,8 @@ bool lista_iterador_tiene_siguiente(lista_iterador_t* iterador){
 
 bool lista_iterador_avanzar(lista_iterador_t* iterador){
     if(iterador && iterador->corriente){
-        bool pudo_avanzar = iterador->corriente;
         iterador->corriente = iterador->corriente->siguiente;
-        return pudo_avanzar;
+        return iterador->corriente;
     }
     
     return false;

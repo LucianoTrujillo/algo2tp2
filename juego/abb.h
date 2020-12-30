@@ -137,6 +137,4 @@ void arbol_destruir(abb_t* arbol);
 */
 size_t abb_con_cada_elemento(abb_t* arbol, int recorrido, bool (*funcion)(void*, void*), void* extra);
 
-void imprimir_arbol(abb_t* arbol);
-
 #endif /* __ARBOL_BINARIO_DE_BUSQUEDA_H__ */
