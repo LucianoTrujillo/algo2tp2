@@ -1,5 +1,5 @@
-#ifndef __ARCHIVOS_H__
-#define __ARCHIVOS_H__
+#ifndef __INICIO_H_
+#define __INICIO_H_
 #include "../juego.h"
 
 #define MAX_NOMBRE_ARCHIVO 100
@@ -23,8 +23,7 @@
 #define CHAR_LIDER 'L'
 #define CHAR_GIMNASIO 'G'
 #define CANTIDAD_LEIDOS_GIMNASIO 3
-#define MAX_POKEMONES_BATALLA 6
 
 int actualizar_personaje(juego_t* juego);
 int agregar_gimnasio(juego_t* juego);
-#endif /* __ARCHIVOS_H__ */
+#endif /* __INICIO_H_ */

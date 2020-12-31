@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include "juego.h"
 #include "interfaz/interfaz.h"
-#include "archivos/archivos.h"
+#include "inicio/inicio.h"
+#include "gimnasio/gimnasio.h"
 
 #define ACTUALIZAR_PERSONAJE 0
 #define AGREGA_GIMNASIO 1
@@ -24,16 +25,17 @@
 #define REINTENTAR_GIMNASIO 1
 #define FINALIZAR_PARTIDA 2
 
+
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
 
 menu_t tratar_comenzar(juego_t* juego){
-  if(juego->personaje.pokemones_combate->cantidad == 0){
+  if(lista_elementos(juego->personaje.pokemones_combate) == 0){
     imprimir_consola("debes tener al menos 1 pokemon para combatir");
     return INICIO;
   }
 
-  if(juego->gimnasios->cantidad == 0){
+  if(heap_cantidad(juego->gimnasios) == 0){
     imprimir_consola("debe haber al menos 1 gimnasio para combatir");
     return INICIO;
   }
@@ -67,6 +69,7 @@ menu_t menu_inicio(juego_t* juego){
     default:
       return INICIO;
   }
+
 }
 
 menu_t menu_gym(juego_t* juego){
@@ -80,17 +83,18 @@ menu_t menu_gym(juego_t* juego){
 
   switch (opcion_elegida){
     case VER_PERSONAJE:
-      /* mostrar pj y pokemones */
+      ver_personaje(juego);
       return GYM;
       break;
     case VER_GIMNASIO:
-      /* ver data de gim actual */
+      ver_gimnasio(juego);
       return GYM;
     case CAMBIAR_POKEDEX:
-      /* Interfaz copadísima para el cambio de pokmeones de reserva a batallar y viceversa*/
+      cambiar_pokedex(juego);
       return GYM;
     case IR_BATALLA:
-      /*mensaje empieza la batalla*/
+      imprimir_consola("empieza la batalla. Acordate que podes cambiar tus pokemones de combate"
+                        "si no te va bien esta vez.");
       return BATALLA;
     default:
       return GYM;
@@ -186,6 +190,12 @@ int comparar_pokemones(void* pokemon_1, void* pokemon_2){
   return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
 }
 
+int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2){
+  gimnasio_t* gim_1 = (gimnasio_t*)gimnasio_1;
+  gimnasio_t* gim_2 = (gimnasio_t*)gimnasio_2;
+  return (int)(gim_2->dificultad - gim_1->dificultad);
+}
+
 void destruir_pokemon(void* pokemon){
     free(pokemon);
 }
@@ -201,8 +211,18 @@ int inicializar_juego(juego_t* juego){
   
   juego->personaje.pokemones_combate = lista_crear();
 
-  if(!juego->personaje.pokemones_combate)
+  if(!juego->personaje.pokemones_combate){
+    arbol_destruir(juego->personaje.pokemones_reserva);
     return ERROR;
+  }
+  
+  juego->gimnasios = heap_crear(comparar_gimnasios, NULL);
+
+  if(!juego->gimnasios){
+    arbol_destruir(juego->personaje.pokemones_reserva);
+    lista_destruir(juego->personaje.pokemones_combate);
+    return ERROR;
+  }
 
   return EXITO;
 }

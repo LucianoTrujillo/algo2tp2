@@ -10,6 +10,7 @@
 #define MAX_NOMBRE 100
 #define PUNTOS_RECOMPENSA_COMBATE 1
 #define MAX_PUNTOS 63
+#define MAX_POKEMONES_BATALLA 6
 
 typedef int (*funcion_batalla)(void*, void*);
 

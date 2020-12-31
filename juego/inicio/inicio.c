@@ -1,4 +1,4 @@
-#include "archivos.h"
+#include "inicio.h"
 #include "../juego.h"
 #include "../interfaz/interfaz.h"
 
@@ -107,7 +107,7 @@ FILE* obtener_archivo(char* mensaje){
   char nombre_archivo[MAX_NOMBRE_ARCHIVO];
   printf("%s", mensaje);
   scanf("%s", nombre_archivo);
-  while ((getchar()) != '\n'); 
+  while ((getchar()) != '\n');
   FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
   if(!archivo)
     imprimir_consola("No se pudo abrir el archivo");
@@ -247,6 +247,7 @@ int agregar_gimnasio(juego_t* juego){
 
   char identificador_linea;
   pokemon_t* pokemon_nuevo = NULL;
+
   do {
     if(leer_identificador_linea(archivo, &identificador_linea) == ERROR){
       entrenador_actual = NULL;
@@ -267,5 +268,6 @@ int agregar_gimnasio(juego_t* juego){
   } while(entrenador_actual);
   heap_insertar(juego->gimnasios, (void*)nuevo_gim);
   fclose(archivo);
+  imprimir_consola("gimnasio agregado correctamente");
   return EXITO;
 }
