@@ -6,6 +6,7 @@
 #define TP2_INTERFAZ_H
 
 #define MAX_OPCIONES 10
+#define MAX_MENSAJE 200
 
 int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
 void imprimir_consola(char* mensaje);
