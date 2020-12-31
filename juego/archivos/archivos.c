@@ -265,7 +265,6 @@ int agregar_gimnasio(juego_t* juego){
       }
     }
   } while(entrenador_actual);
-  ver_datos_gim(*nuevo_gim);
   heap_insertar(juego->gimnasios, (void*)nuevo_gim);
   fclose(archivo);
   return EXITO;

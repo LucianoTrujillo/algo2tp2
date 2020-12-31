@@ -27,6 +27,21 @@
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
 
+menu_t tratar_comenzar(juego_t* juego){
+  if(juego->personaje.pokemones_combate->cantidad == 0){
+    imprimir_consola("debes tener al menos 1 pokemon para combatir");
+    return INICIO;
+  }
+
+  if(juego->gimnasios->cantidad == 0){
+    imprimir_consola("debe haber al menos 1 gimnasio para combatir");
+    return INICIO;
+  }
+  
+  imprimir_consola("empieza la aventura, mucha suerte");
+  return GYM;
+}
+
 menu_t menu_inicio(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Ingresar entrenador principal",
@@ -35,11 +50,6 @@ menu_t menu_inicio(juego_t* juego){
     "Simular la partida" };
 
   int opcion_elegida = elegir_opcion("INICIO", opciones, 4, 0);
-
-  char msj[MAX_MENSAJE];
-  memset(msj, '\0', MAX_MENSAJE);
-  sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case ACTUALIZAR_PERSONAJE:
@@ -50,12 +60,10 @@ menu_t menu_inicio(juego_t* juego){
       agregar_gimnasio(juego);
       return INICIO;
     case COMIENZA_PARTIDA_INTERACTIVA:
-      /*mensje de que comienza la aventura interactiva*/
-      return GYM;
+      return tratar_comenzar(juego);
     case SIMULA_PARTIDA:
-      /*mensaje empieza la simulación*/
       juego->simulacion = true;
-      return GYM;
+      return tratar_comenzar(juego);
     default:
       return INICIO;
   }
@@ -69,11 +77,6 @@ menu_t menu_gym(juego_t* juego){
     "Ir a proxima batalla" };
 
   int opcion_elegida = elegir_opcion("GIMNASIO", opciones, 4, 0);
-
-  char msj[MAX_MENSAJE];
-  memset(msj, '\0', MAX_MENSAJE);
-  sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case VER_PERSONAJE:
@@ -121,11 +124,6 @@ menu_t menu_victoria(juego_t* juego){
 
   int opcion_elegida = elegir_opcion("VICTORIA", opciones, cantidad_opciones, 0);
 
-  char msj[MAX_MENSAJE];
-  memset(msj, '\0', MAX_MENSAJE);
-  sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  imprimir_consola(msj);
-
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_VICTORIA:
       /* misma Interfaz copadísima que usé para el inicio, DRY CODE PLEASE para el cambio de pokmeones de reserva a batallar y viceversa*/
@@ -152,11 +150,6 @@ menu_t menu_derrota(juego_t* juego){
     "Finalizar la partida" };
 
   int opcion_elegida = elegir_opcion("DERROTA", opciones, 3, 0);
-
-  char msj[MAX_MENSAJE];
-  memset(msj, '\0', MAX_MENSAJE);
-  sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_DERROTA:
@@ -211,7 +204,6 @@ int inicializar_juego(juego_t* juego){
   if(!juego->personaje.pokemones_combate)
     return ERROR;
 
-  juego->gimnasios = NULL; //falta inicializarle el heap postaa
   return EXITO;
 }
 
