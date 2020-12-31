@@ -3,8 +3,9 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include "lista.h"
-#include "abb.h"
+#include "lista/lista.h"
+#include "arbol/abb.h"
+#include "heap/heap.h"
 
 #define MAX_NOMBRE 100
 #define PUNTOS_RECOMPENSA_COMBATE 1
@@ -21,7 +22,7 @@ typedef struct pokemon{
 
 typedef struct entrenador {
   char nombre[MAX_NOMBRE];
-  pokemon_t* pokemones;
+  lista_t* pokemones;
 } entrenador_t;
 
 typedef struct gimnasio {
@@ -37,10 +38,6 @@ typedef struct personaje {
   abb_t* pokemones_reserva;
   lista_t* pokemones_combate;
 } personaje_t;
-
-typedef struct heap {
-  int cantidad;
-} heap_t;
 
 typedef struct juego {
   heap_t* gimnasios;

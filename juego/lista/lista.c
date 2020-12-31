@@ -272,7 +272,7 @@ size_t lista_con_cada_elemento(lista_t* lista, bool (*funcion)(void*, void*), vo
     bool seguir_iterando = true;
      
     while(contador < (lista->cantidad) && seguir_iterando){
-        seguir_iterando = funcion(nodo_actual->elemento, contexto);
+        seguir_iterando = !funcion(nodo_actual->elemento, contexto);
         nodo_actual = nodo_actual->siguiente;
         contador++;
     }

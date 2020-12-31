@@ -26,42 +26,52 @@
 #define MAX_MENSAJE 200
 #define MAX_NOMBRE_ARCHIVO 100
 
-#define ENTRENADOR_FORMATO_NOMBRE "%1[^;];%100[^\n]\n"
+#define FORMATO_NOMBRE "%1[^;];%100[^\n]\n"
 #define FORMATO_POKEMON "%1[^;];%100[^;];%i;%i;%i\n"
 #define MODO_LECTURA "r"
 #define CHAR_ENTRENADOR "E"
 #define CHAR_POKEMON "P"
-#define CANTIDAD_LEIDOS_ENTRENADOR 2
+#define CANTIDAD_LEIDOS_NOMBRE 2
 #define CANTIDAD_LEIDOS_POKEMON 5
 #define LECTURA_INCOMPLETA 2
 #define ERROR -1
 #define EXITO 0
 
+#define FORMATO_GIMNASIO "%1[^;];%100[^;];%lu;%lu\n"
+#define CHAR_LIDER "L"
+#define CHAR_GIMNASIO "G"
+#define CANTTIDAD_LEIDOS_GIMNASIO 4
+
+#define MAX_POKEMONES_BATALLA 6
 
 bool imprimir_pokemon(void* pokemon, void* extra){
   printf("%s\n",((pokemon_t*)pokemon)->nombre);
   return false;
 }
 
-int leer_entrenador_principal(juego_t* juego){
-  char nombre_archivo[MAX_NOMBRE_ARCHIVO];
-  printf("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
-  scanf("%s", nombre_archivo);
-  FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
-  
-  if(!archivo)
+bool imprimir_entrenador(void* entrenador, void* extra){
+  printf("Nombre entrenador: %s\n",((entrenador_t*)entrenador)->nombre);
+  printf("Pokemones entrenador: \n");
+  lista_con_cada_elemento(((entrenador_t*)entrenador)->pokemones, imprimir_pokemon, NULL);
+  return false;
+}
+
+int leer_nombre(FILE* archivo, char* nombre, char* caracter_identificador){
+  char identificardor_linea[2];
+  int res = fscanf(archivo, FORMATO_NOMBRE, identificardor_linea, nombre);
+
+  if(res != CANTIDAD_LEIDOS_NOMBRE || strcmp(identificardor_linea, caracter_identificador) != 0)
     return ERROR;
   
-  char identificardor_linea[2];
-  int res = fscanf(archivo, ENTRENADOR_FORMATO_NOMBRE, identificardor_linea, juego->personaje.nombre);
-
-  if(res != CANTIDAD_LEIDOS_ENTRENADOR || strcmp(identificardor_linea, CHAR_ENTRENADOR) != 0){
+  return EXITO;
+}
+int leer_pokemones(FILE* archivo, void* entrenador, int (*insertar)(void* entrenador, pokemon_t* pokemon, int* contador)){
+  pokemon_t* pokemon = malloc(sizeof(pokemon_t));
+  if(!pokemon){
     return ERROR;
   }
-
-  pokemon_t* pokemon = malloc(sizeof(pokemon_t));
-  if(!pokemon)
-    return ERROR;
+  char identificardor_linea[2];
+  int contador = 0;
 
   while(fscanf(
               archivo,
@@ -72,14 +82,152 @@ int leer_entrenador_principal(juego_t* juego){
               &(pokemon->ataque), 
               &(pokemon->defensa)) == CANTIDAD_LEIDOS_POKEMON &&
               strcmp(identificardor_linea, CHAR_POKEMON) == 0){
-                  
-    arbol_insertar(juego->personaje.pokemones_reserva, pokemon);
+    
+    if(insertar(entrenador, pokemon, &contador) == ERROR){
+      return ERROR;
+    }
+
     pokemon = malloc(sizeof(pokemon_t));
     if(!pokemon)
       return ERROR;
   }
+  printf("pokemones leidos: %i\n", contador);
+  return EXITO;
+}
+
+int insertar_pokemon_personaje(void* entrenador_generico, pokemon_t* pokemon, int* contador){
+  personaje_t* entrenador_principal = (personaje_t*)entrenador_generico;
+
+  int resultado_insercion = EXITO;
+  if(*contador < MAX_POKEMONES_BATALLA){
+    resultado_insercion = lista_insertar(entrenador_principal->pokemones_combate, pokemon);
+  } else {
+    resultado_insercion = arbol_insertar(entrenador_principal->pokemones_reserva, pokemon);
+  }
+
+  if(resultado_insercion == EXITO)
+    (*contador)++;
+
+  return resultado_insercion;
+}
+
+int insertar_pokemon_entrenador(void* entrenador_generico, pokemon_t* pokemon, int* contador){
+  entrenador_t* entrenador = (entrenador_t*)entrenador_generico;
+
+  if(lista_insertar(entrenador->pokemones, pokemon) == EXITO){
+    (*contador)++;
+    return EXITO;
+  }
+
+  return ERROR;
+}
+
+int leer_entrenador(FILE* archivo, entrenador_t* entrenador, char* identificador){
+  int res = leer_nombre(archivo, entrenador->nombre, identificador);
+  printf("resultado: %i, nombre: %s\n", res, entrenador->nombre);
+  if(leer_nombre(archivo, entrenador->nombre, identificador) == ERROR){
+    return ERROR;
+  }
+  printf("hola");
+  return leer_pokemones(archivo, (void*)(entrenador), insertar_pokemon_entrenador);
+}
+
+int leer_entrenador_principal(juego_t* juego){
+  char nombre_archivo[MAX_NOMBRE_ARCHIVO];
+  printf("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
+  scanf("%s", nombre_archivo);
+  while ((getchar()) != '\n'); 
+
+  FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
+  
+  if(!archivo){
+    imprimir_consola("No se pudo abrir el archivo del entrenador");
+    return ERROR;
+  }
+  
+  if(leer_nombre(archivo, (juego->personaje.nombre), CHAR_ENTRENADOR) == ERROR){
+    imprimir_consola("No se pudo leer el nombre del entrenador");
+    fclose(archivo);
+    return ERROR;
+  }
+
+  int resultado = leer_pokemones(archivo, (void*)(&(juego->personaje)), insertar_pokemon_personaje);
+
+  if(resultado == ERROR){
+    imprimir_consola("No se pudo leer correctamente todos los pokemones del personaje");
+  } else {
+    imprimir_consola("Informacion del entrenador actualizada correctamente");
+  }
+
   fclose(archivo);
-  abb_con_cada_elemento(juego->personaje.pokemones_reserva, ABB_RECORRER_INORDEN, imprimir_pokemon, NULL);
+  return resultado;
+}
+
+
+void ver_datos_gim(gimnasio_t gim){
+  printf("Nombre: %s\n", gim.nombre);
+  printf("Dificultad: %lu\n", gim.dificultad);
+  printf("ID de batalla: %lu\n", gim.batalla_id);
+
+  printf("Nombre lider: %s\n", gim.lider.nombre);
+  printf("Pokemones del lider: \n");
+  lista_con_cada_elemento(gim.lider.pokemones, imprimir_pokemon, NULL);
+  
+  printf("Entrenadores: \n");
+  lista_con_cada_elemento(gim.entrenadores, imprimir_entrenador, NULL);
+}
+
+int agregar_gimnasio(juego_t* juego){
+  char nombre_archivo[MAX_NOMBRE_ARCHIVO];
+  printf("Ingresa la ruta al archivo donde se encuentra la información del gimnasio: ");
+  scanf("%s", nombre_archivo);
+  while ((getchar()) != '\n'); 
+  FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
+  
+  if(!archivo){
+    imprimir_consola("No se pudo abrir el archivo del gimnasio");
+    return ERROR;
+  }
+  
+  char identificardor_linea[2];
+  gimnasio_t* nuevo_gim = calloc(1, sizeof(gimnasio_t));
+  if(!nuevo_gim){
+    fclose(archivo);
+    imprimir_consola("No se pudo crear el nuevo gimnasio");
+    return ERROR;
+  }
+
+  int res = fscanf(archivo, FORMATO_GIMNASIO, identificardor_linea, nuevo_gim->nombre, &(nuevo_gim->dificultad), &(nuevo_gim->batalla_id));
+  if(res != CANTTIDAD_LEIDOS_GIMNASIO || strcmp(identificardor_linea, CHAR_GIMNASIO) != 0){
+    imprimir_consola("El formato del gimnasio es incorrecto. Visitar el README para mas informacion");
+    fclose(archivo);
+    return ERROR;
+  }
+  ver_datos_gim(*nuevo_gim);
+  if(leer_entrenador(archivo, &(nuevo_gim->lider), CHAR_LIDER) == ERROR){
+    imprimir_consola("No se pudo leer la informacion del lider");
+    fclose(archivo);
+    return ERROR;
+  }
+
+  int resultado_lectura = EXITO;
+  entrenador_t* nuevo_entrenador = NULL;
+
+  do {
+    nuevo_entrenador = calloc(1, sizeof(entrenador_t));
+    if(!nuevo_entrenador){
+      fclose(archivo);
+      return ERROR;
+    }
+
+    resultado_lectura = leer_entrenador(archivo, nuevo_entrenador, CHAR_ENTRENADOR);
+    if(resultado_lectura == EXITO)
+      lista_insertar(nuevo_gim->entrenadores, nuevo_entrenador);
+  } while(resultado_lectura == EXITO);
+
+  ver_datos_gim(*nuevo_gim);
+  heap_insertar(juego->gimnasios, (void*)nuevo_gim);
+  fclose(archivo);
   return EXITO;
 }
 
@@ -98,7 +246,7 @@ menu_t menu_inicio(juego_t* juego){
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  mostrar_mensaje_fluido(msj);
+  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case INGRESA_ENTRENADOR_PRINCIPAL:
@@ -106,6 +254,7 @@ menu_t menu_inicio(juego_t* juego){
       return INICIO;
       break;
     case AGREGA_GIMNASIO:
+      agregar_gimnasio(juego);
       /* agregar gimansio a heap medainte lectura de archivo */
       return INICIO;
     case COMIENZA_PARTIDA_INTERACTIVA:
@@ -132,7 +281,7 @@ menu_t menu_gym(juego_t* juego){
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  mostrar_mensaje_fluido(msj);
+  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case VER_PERSONAJE:
@@ -183,7 +332,7 @@ menu_t menu_victoria(juego_t* juego){
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  mostrar_mensaje_fluido(msj);
+  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_VICTORIA:
@@ -215,7 +364,7 @@ menu_t menu_derrota(juego_t* juego){
   char msj[MAX_MENSAJE];
   memset(msj, '\0', MAX_MENSAJE);
   sprintf(msj, "Elegiste %s.", opciones[opcion_elegida]);
-  mostrar_mensaje_fluido(msj);
+  imprimir_consola(msj);
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_DERROTA:
@@ -285,7 +434,7 @@ int jugar(){
     menu_actual = mostrar_menu(menu_actual, &juego);
   }
 
-  mostrar_mensaje_fluido("Chau! Esperamos verte pronto...");
+  imprimir_consola("Chau! Esperamos verte pronto...");
 
   return 0;
 }

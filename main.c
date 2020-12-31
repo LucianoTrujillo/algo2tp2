@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "juego/juego.h"
+#include "juego/heap/heap.h"
 
 /*
  * Pruebas del TP2
@@ -13,6 +14,7 @@
 // }
 
 int main() {
-    jugar();
-    return 0;
+  //probar_heap();
+  jugar();
+  return 0;
 }

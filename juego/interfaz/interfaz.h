@@ -8,6 +8,6 @@
 #define MAX_OPCIONES 10
 
 int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
-void mostrar_mensaje_fluido(char* mensaje);
+void imprimir_consola(char* mensaje);
 
 #endif /*TP2_INTERFAZ_H*/
