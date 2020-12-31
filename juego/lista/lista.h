@@ -162,8 +162,8 @@ void lista_iterador_destruir(lista_iterador_t* iterador);
 
 /*
  * Iterador interno. Recorre la lista e invoca la funcion con cada elemento de
- * la misma. Dicha función puede devolver true si se deben seguir recorriendo
- * elementos o false si se debe dejar de iterar elementos.
+ * la misma. Dicha función puede devolver false si se deben seguir recorriendo
+ * elementos o true si se debe dejar de iterar elementos.
  *
  * La función retorna la cantidad de elementos iterados o 0 en caso de error.
  */

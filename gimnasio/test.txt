@@ -1,9 +1,9 @@
-G;Gimnasio de Ciudad Celeste; 15; 3
+G;Gimnasio de Ciudad Celeste;15;3
 L;Misty
-P;Staryu; 50; 40; 50;
-P;Starmie; 90; 50; 60;
-E;Dominguera Diana
-P;Goldeen; 40; 50; 30
-E;Nadador Luis
-P;Horsea; 45; 30; 20
-P;Shellder; 30;20;45
+P;Staryu;50;40;50
+P;Starmie;90;50;60
+E;DomingueraDiana
+P;Goldeen;40;50;30
+E;NadadorLuis
+P;Horsea;45;30;20
+P;Shellder;30;20;45
