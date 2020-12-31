@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define INGRESA_ENTRENADOR_PRINCIPAL 0
+#define ACTUALIZAR_PERSONAJE 0
 #define AGREGA_GIMNASIO 1
 #define COMIENZA_PARTIDA_INTERACTIVA 2
 #define SIMULA_PARTIDA 3
@@ -62,46 +62,60 @@ bool imprimir_entrenador(void* entrenador, void* extra){
 }
 
 int leer_identificador_linea(FILE* archivo, char* identificador){
-  return fscanf(archivo, FORMATO_IDENTIFICADOR_LINEA, identificador);
+  return fscanf(archivo, FORMATO_IDENTIFICADOR_LINEA, identificador) == 1 ? EXITO : ERROR;
+}
+
+int leer_identificador_linea_esperada(FILE* archivo, char identificador_esperado){
+  char identificador_linea;
+  int estado;
+
+  estado = leer_identificador_linea(archivo, &identificador_linea);
+
+  if(estado == ERROR || identificador_linea != identificador_esperado)
+    return ERROR;
+  
+  return EXITO;
 }
 
 int leer_nombre_entrenador(FILE* archivo, char* nombre){
-  int res = fscanf(archivo, FORMATO_NOMBRE, nombre);
-
-  if(res != CANTIDAD_LEIDOS_NOMBRE)
-    return ERROR;
-  
-  return EXITO;
+  return fscanf(archivo, FORMATO_NOMBRE, nombre) == 1 ? EXITO : ERROR;
 }
 
 int leer_nombre_personaje(FILE* archivo, char* nombre, char caracter_identificador){
-  char identificador_linea;
-  int res = fscanf(archivo, FORMATO_NOMBRE_PERSONAJE, &identificador_linea, nombre);
+  if(leer_identificador_linea_esperada(archivo, caracter_identificador) == EXITO)
+    return leer_nombre_entrenador(archivo, nombre);
 
-  if(res != CANTIDAD_LEIDOS_NOMBRE_PERSONAJE || identificador_linea != caracter_identificador)
-    return ERROR;
+  return ERROR;
+}
+
+int leer_pokemon(FILE* archivo, pokemon_t* pokemon){
+  if(fscanf(archivo,
+        FORMATO_POKEMON,
+        pokemon->nombre,
+        &(pokemon->velocidad),
+        &(pokemon->ataque),
+        &(pokemon->defensa)) 
+        == CANTIDAD_LEIDOS_POKEMON){
+    return EXITO;
+    } else {
+      return ERROR;
+    }
+
+}
+
+int leer_pokemon_personaje(FILE* archivo, pokemon_t* pokemon){
+  if(leer_identificador_linea_esperada(archivo, CHAR_POKEMON) == EXITO)
+    return leer_pokemon(archivo, pokemon);
   
-  return EXITO;
+  return ERROR;
 }
 
 int leer_pokemones_personaje(FILE* archivo, void* entrenador, int (*insertar)(void* entrenador, pokemon_t* pokemon, int* contador)){
   pokemon_t* pokemon = malloc(sizeof(pokemon_t));
-  if(!pokemon){
+  if(!pokemon)
     return ERROR;
-  }
-  char identificador_linea;
   int contador = 0;
-
-  while(fscanf(
-              archivo,
-              FORMATO_POKEMON_PERSONAJE,
-              &identificador_linea,
-              pokemon->nombre, 
-              &(pokemon->velocidad), 
-              &(pokemon->ataque), 
-              &(pokemon->defensa)) == CANTIDAD_LEIDOS_POKEMON_PERSONAJE &&
-              identificador_linea != CHAR_POKEMON){
-    
+  while(leer_pokemon_personaje(archivo, pokemon) == EXITO){
     if(insertar(entrenador, pokemon, &contador) == ERROR){
       free(pokemon);
       return ERROR;
@@ -130,16 +144,20 @@ int insertar_pokemon_personaje(void* entrenador_generico, pokemon_t* pokemon, in
   return resultado_insercion;
 }
 
-int leer_entrenador_principal(juego_t* juego){
+FILE* obtener_archivo(char* mensaje){
   char nombre_archivo[MAX_NOMBRE_ARCHIVO];
-  printf("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
+  printf("%s", mensaje);
   scanf("%s", nombre_archivo);
   while ((getchar()) != '\n'); 
-
   FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
-  
+  if(!archivo)
+    imprimir_consola("No se pudo abrir el archivo");
+  return archivo;
+}
+
+int actualizar_personaje(juego_t* juego){
+  FILE* archivo = obtener_archivo("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
   if(!archivo){
-    imprimir_consola("No se pudo abrir el archivo del entrenador");
     return ERROR;
   }
   
@@ -179,40 +197,32 @@ void ver_datos_gim(gimnasio_t gim){
   printf("\n\n\n");
 }
 
-int leer_pokemon(FILE* archivo, pokemon_t* pokemon){
-  return fscanf(archivo,
-                FORMATO_POKEMON,
-                pokemon->nombre,
-                &(pokemon->velocidad),
-                &(pokemon->ataque),
-                &(pokemon->defensa)) 
-                == CANTIDAD_LEIDOS_POKEMON;
-}
-
-int agregar_gimnasio(juego_t* juego){
-  char nombre_archivo[MAX_NOMBRE_ARCHIVO];
-  printf("Ingresa la ruta al archivo donde se encuentra la información del gimnasio: ");
-  scanf("%s", nombre_archivo);
-  while ((getchar()) != '\n'); 
-  FILE* archivo = fopen(nombre_archivo, MODO_LECTURA);
-  
-  if(!archivo){
-    imprimir_consola("No se pudo abrir el archivo del gimnasio");
-    return ERROR;
-  }
-  
+gimnasio_t* crear_gimnasio(){
   gimnasio_t* nuevo_gim = calloc(1, sizeof(gimnasio_t));
   if(!nuevo_gim){
-    fclose(archivo);
     imprimir_consola("No se pudo crear el nuevo gimnasio");
-    return ERROR;
+    return NULL;
   }
 
   nuevo_gim->entrenadores = lista_crear();
   if(!nuevo_gim->entrenadores){
     free(nuevo_gim);
-    fclose(archivo);
     imprimir_consola("No se pudo crear el nuevo gimnasio");
+    return NULL;
+  }
+
+  return nuevo_gim;
+}
+
+int agregar_gimnasio(juego_t* juego){
+  FILE* archivo = obtener_archivo("Ingresa la ruta al archivo donde se encuentra la información del gimnasio: ");
+  if(!archivo){
+    return ERROR;
+  }
+  
+  gimnasio_t* nuevo_gim = crear_gimnasio();
+  if(!nuevo_gim){
+    fclose(archivo);
     return ERROR;
   }
 
@@ -306,8 +316,8 @@ menu_t menu_inicio(juego_t* juego){
   imprimir_consola(msj);
 
   switch (opcion_elegida){
-    case INGRESA_ENTRENADOR_PRINCIPAL:
-      leer_entrenador_principal(juego);
+    case ACTUALIZAR_PERSONAJE:
+      actualizar_personaje(juego);
       return INICIO;
       break;
     case AGREGA_GIMNASIO:
