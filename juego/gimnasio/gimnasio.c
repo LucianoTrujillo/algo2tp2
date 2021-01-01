@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h> //para obtener dimension de la consola
 #include "../juego.h"
 #include "gimnasio.h"
 #include "../interfaz/interfaz.h"
@@ -44,19 +45,52 @@ pantalla_t poke_combate(juego_t* juego, int* posicion_combate, char nombre_reser
   *posicion_combate = pos_pokemon_remover;
   return PANTALLA_ELEGIR_POKEMON_INTERCAMBIAR_RESERVA;
 }
+#define ANCHO_TABLA 82
+#define MAX_ANCHO_NOMBRE 30
+#define MAX_ANCHO_ATRIBUTO 15
+#define PADDING 2
 
-void imprimir_pokemon_fila(pokemon_t* pokemon){
-  printf("%s | ...\n", pokemon->nombre);
+void imprimir_pokemones(pokemon_t* pokemones[MAX_RESERVA], size_t cantidad){
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+  int ancho_media_pantalla = (int)((w.ws_col - ANCHO_TABLA) / 2);
+  int alto_media_pantalla = (int)(w.ws_row - (cantidad)) / 2;
+
+  if(!pokemones){
+      return;
+  }
+
+  for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
+
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("║%-*s %-*s %-*s %-*s║\n",
+  MAX_ANCHO_NOMBRE, "Nombre",
+  MAX_ANCHO_ATRIBUTO, "Velocidad",
+  MAX_ANCHO_ATRIBUTO, "Ataque",
+  MAX_ANCHO_ATRIBUTO, "Defensa");
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("║══════════════════════════════════════════════════════════════════════════════║\n");
+  for(int i = 0; i < cantidad; i++){
+    printf("%*s", ancho_media_pantalla, " ");
+    printf("║%-*s %-*i %-*i %-*i║\n",
+    MAX_ANCHO_NOMBRE, pokemones[i]->nombre,
+    MAX_ANCHO_ATRIBUTO, pokemones[i]->velocidad,
+    MAX_ANCHO_ATRIBUTO, pokemones[i]->ataque,
+    MAX_ANCHO_ATRIBUTO, pokemones[i]->defensa);
+  }
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("╚══════════════════════════════════════════════════════════════════════════════╝\n");
+
+  for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
 }
 
 pantalla_t poke_reserva(juego_t* juego, int* posicion_combate, char nombre_reserva[MAX_NOMBRE]){
-  imprimir_consola("mostrando reserva...");
   pokemon_t* pokemones_reserva[MAX_RESERVA];
   size_t cantidad = arbol_recorrido_inorden(juego->personaje.pokemones_reserva, (void**)pokemones_reserva, MAX_RESERVA);
 
-  for(int i = 0; i < cantidad; i++){
-    imprimir_pokemon_fila(pokemones_reserva[i]);
-  }
+  imprimir_pokemones(pokemones_reserva, cantidad);
 
   pokemon_t* pokemon_elegido = NULL;
 

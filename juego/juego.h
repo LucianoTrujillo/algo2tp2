@@ -47,5 +47,8 @@ typedef struct juego {
 } juego_t;
 
 int jugar();
+void destruir_pokemon(void* pokemon);
+int comparar_pokemones(void* pokemon_1, void* pokemon_2);
+int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2);
 
 #endif /* __JUEGO_H__ */

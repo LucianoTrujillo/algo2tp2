@@ -133,6 +133,19 @@ int actualizar_personaje(juego_t* juego){
     return ERROR;
   }
 
+  //hacer que libere memoria de elementos
+  lista_destruir(juego->personaje.pokemones_combate);
+  juego->personaje.pokemones_combate = lista_crear();
+
+  if(!juego->personaje.pokemones_combate){
+    return ERROR;
+  }
+
+  arbol_destruir(juego->personaje.pokemones_reserva);
+  juego->personaje.pokemones_reserva = arbol_crear(comparar_pokemones, destruir_pokemon);
+  if(!juego->personaje.pokemones_reserva)
+    return ERROR;
+
   int resultado = leer_pokemones_personaje(archivo, (void*)(&(juego->personaje)), insertar_pokemon_personaje);
 
   if(resultado == ERROR){

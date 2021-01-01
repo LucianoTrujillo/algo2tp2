@@ -9,22 +9,6 @@
 #include "pa2mm.h"
 
 
-static void destruir_pokemon(void* pokemon){
-    free(pokemon);
-}
-static int comparar_pokemones(void* pokemon_1, void* pokemon_2){
-  if(!pokemon_1 || !pokemon_2)
-    return 1;
-
-  return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
-}
-
-static int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2){
-  gimnasio_t* gim_1 = (gimnasio_t*)gimnasio_1;
-  gimnasio_t* gim_2 = (gimnasio_t*)gimnasio_2;
-  return (int)(gim_2->dificultad - gim_1->dificultad);
-}
-
 static int inicializar_juego(juego_t* juego){
   juego->simulacion = false;
   
@@ -61,12 +45,6 @@ int probar_inicio(){
   pa2m_mostrar_reporte();
   return EXITO;
 }
-
-int probar_gimnasio(){
-  
-  return EXITO;
-}
-
 
 static int comparador(void* elemento_1, void* elemento_2){
     if(*(int*)(elemento_1) == *(int*)elemento_2)
@@ -131,6 +109,5 @@ int probar_heap(){
 int probar(){
   probar_heap();
   probar_inicio();
-  probar_gimnasio();
   return __pa2m_cantidad_de_pruebas_fallidas == 0;
 }
