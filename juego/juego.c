@@ -240,7 +240,7 @@ int jugar(){
 
   imprimir_consola("Chau! Esperamos verte pronto...");
 
-  return 0;
+  return EXITO;
 }
 
 

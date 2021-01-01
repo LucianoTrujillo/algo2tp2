@@ -114,8 +114,15 @@ FILE* obtener_archivo(char* mensaje){
   return archivo;
 }
 
+FILE* obtener_archivo_2(char* nombre){
+  FILE* archivo = fopen(nombre, MODO_LECTURA);
+  if(!archivo)
+    imprimir_consola("No se pudo abrir el archivo");
+  return archivo;
+}
+
 int actualizar_personaje(juego_t* juego){
-  FILE* archivo = obtener_archivo("Ingresa la ruta al archivo donde se encuentra la información del entrenador principal: ");
+  FILE* archivo = obtener_archivo_2("entrenador/test.txt");
   if(!archivo){
     return ERROR;
   }
@@ -214,7 +221,7 @@ void agregar_pokemon_gimnasio(FILE* archivo, pokemon_t* pokemon, entrenador_t** 
 }
 
 int agregar_gimnasio(juego_t* juego){
-  FILE* archivo = obtener_archivo("Ingresa la ruta al archivo donde se encuentra la información del gimnasio: ");
+  FILE* archivo = obtener_archivo_2("gimnasio/test.txt");
   if(!archivo){
     return ERROR;
   }

@@ -2,6 +2,7 @@
 #define __INICIO_H_
 #include "../juego.h"
 
+
 #define MAX_NOMBRE_ARCHIVO 100
 #define FORMATO_IDENTIFICADOR_LINEA "%c;"
 #define FORMATO_NOMBRE "%100[^\n]\n"

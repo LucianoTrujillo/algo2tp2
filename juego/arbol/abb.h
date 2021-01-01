@@ -65,7 +65,7 @@ int arbol_insertar(abb_t* arbol, void* elemento);
  * dicho elemento.
  * Devuelve 0 si pudo eliminar el elemento o -1 en caso contrario.
  */
-int arbol_borrar(abb_t* arbol, void* elemento);
+int arbol_borrar(abb_t* arbol, void* elemento, bool destruir_elemento);
 
 /*
  * Busca en el arbol un elemento igual al provisto (utilizando la

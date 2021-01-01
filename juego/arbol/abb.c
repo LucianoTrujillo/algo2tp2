@@ -83,8 +83,8 @@ nodo_abb_t* buscar_nodo(nodo_abb_t* nodo, void* elemento, abb_comparador compara
   Si existe el destructor, lo aplica sobre el elemento del nodo pasado por parametros.
   Libera la memoria alocada por el nodo.
 */
-void destruir_nodo(nodo_abb_t* nodo, abb_liberar_elemento destructor){
-  if(nodo && destructor)
+void destruir_nodo(nodo_abb_t* nodo, abb_liberar_elemento destructor, bool destruir_elemento){
+  if(nodo && destructor && destruir_elemento)
       destructor(nodo->elemento);
   free(nodo);
 }
@@ -221,7 +221,7 @@ void destruir_recursivamente(nodo_abb_t* nodo, abb_liberar_elemento destructor){
   if(nodo){
     destruir_recursivamente(nodo->izquierda, destructor);
     destruir_recursivamente(nodo->derecha, destructor);
-    destruir_nodo(nodo, destructor);
+    destruir_nodo(nodo, destructor, true);
   }
 }
 
@@ -239,25 +239,25 @@ nodo_abb_t* obtener_predecesor_inorden(nodo_abb_t* nodo){
   Borra el primer nodo del arbol con el elemento pasado por parametros.
   Si no encuentra ningún nodo con ese elemento, deja el arbol intacto.
 */
-nodo_abb_t* borrar_elemento(nodo_abb_t* nodo, void* elemento, abb_comparador comparador, abb_liberar_elemento destructor){
+nodo_abb_t* borrar_elemento(nodo_abb_t* nodo, void* elemento, abb_comparador comparador, abb_liberar_elemento destructor, bool destruir_elemento){
   if(!nodo) return NULL;
 
   //navegar hasta el nodo
   if(comparador(nodo->elemento, elemento) > 0){
-    nodo->izquierda = borrar_elemento(nodo->izquierda, elemento, comparador, destructor);
+    nodo->izquierda = borrar_elemento(nodo->izquierda, elemento, comparador, destructor, destruir_elemento);
 
   } else if(comparador(nodo->elemento, elemento) < 0){
-    nodo->derecha = borrar_elemento(nodo->derecha, elemento, comparador, destructor);
+    nodo->derecha = borrar_elemento(nodo->derecha, elemento, comparador, destructor, destruir_elemento);
   } else {
     //nodo tiene una rama
     if(!nodo->izquierda){
       nodo_abb_t* rama_derecha = nodo->derecha;
-      destruir_nodo(nodo, destructor);
+      destruir_nodo(nodo, destructor, destruir_elemento);
       return rama_derecha;
 
     } else if(!nodo->derecha){
       nodo_abb_t* rama_izquierda = nodo->izquierda;
-      destruir_nodo(nodo, destructor);
+      destruir_nodo(nodo, destructor, destruir_elemento);
       return rama_izquierda;
 
     }
@@ -267,7 +267,7 @@ nodo_abb_t* borrar_elemento(nodo_abb_t* nodo, void* elemento, abb_comparador com
     void* aux = nodo->elemento;
     nodo->elemento = predecesor_inorden->elemento;
     predecesor_inorden->elemento = aux;
-    nodo->izquierda = borrar_elemento(nodo->izquierda, predecesor_inorden->elemento, comparador, destructor);
+    nodo->izquierda = borrar_elemento(nodo->izquierda, predecesor_inorden->elemento, comparador, destructor, destruir_elemento);
   }
   
   return nodo;
@@ -317,13 +317,13 @@ void* arbol_buscar(abb_t* arbol, void* elemento){
   return nodo->elemento;
 }
 
-int arbol_borrar(abb_t* arbol, void* elemento){
+int arbol_borrar(abb_t* arbol, void* elemento, bool destruir_elemento){
   if(!arbol)
     return ERROR;
 
   if(!arbol_buscar(arbol, elemento)) return ERROR;
 
-  arbol->nodo_raiz = borrar_elemento(arbol->nodo_raiz, elemento, arbol->comparador, arbol->destructor);
+  arbol->nodo_raiz = borrar_elemento(arbol->nodo_raiz, elemento, arbol->comparador, arbol->destructor, destruir_elemento);
   return EXITO;
 }
 

@@ -186,7 +186,6 @@ void obtener_input(int* c){
     system("/bin/stty raw");
     *c = getchar();
     system("/bin/stty cooked");
-
 }
 
 void imprimir_consola(char* mensaje){
@@ -230,14 +229,7 @@ void mostrar_opciones(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opc
     }
 
     for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
-
-   // imprimir_consola("a");
-    //imprimir_consola("hola");
-    //imprimir_consola("1 2 3 4 5 6 7 8 9 10 11 12 13 141 51 617 18 19 202 12 22 3 242 52 62 72 82 93 0 31 32 33 34 3536 47 3 839 40 ");
-  //   imprimir_consola("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue");
-  //   imprimir_consola("Hola reyy como te va? en que andas? todo piola? jaajaj me re alegro, sabes que el otro dia estaba pensando en vos y me re colgue pero por suerte ya estoy de nuevo. Vivito y coleante como de costumbre, no vaya a ser que me mura jajaja pero anda por suerte todo re bien, un gustazo de verdad. Vos en que andas? todo bien? jajajaja. No bueno chau nos vemos! abzo!");
-  //  imprimir_consola("On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.");
-}
+  }
 
 
 int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada){
