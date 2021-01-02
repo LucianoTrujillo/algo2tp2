@@ -84,6 +84,7 @@ bool pudo_tomar_prestado_pokemon(juego_t* juego){
   
   pokemon_t* pokemon_prestado = lista_elemento_en_posicion(gim_actual->lider.pokemones,(size_t)posicion);
   arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
+  imprimir_consola("pokemon robado exitosamente... Digo tomado prestado");
   return true;
 }
 
