@@ -12,8 +12,6 @@
 
 #define AMARILLO "\x1b[33;1m"
 #define BLANCO "\x1b[37;1m"
-#define TITULO "\x1b[37;4m"
-#define CERRAR_TITULO "\x1b[37;0m"
 
 #define ANCHO_OPCION 42
 #define ALTO_OPCION 3

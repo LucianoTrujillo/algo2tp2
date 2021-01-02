@@ -165,6 +165,13 @@ void* heap_extraer_raiz(heap_t* heap){
   return raiz;
 }
 
+void* heap_raiz(heap_t* heap){
+  if(!heap || heap->cantidad == 0)
+    return NULL;
+
+  return heap->elementos[0];
+}
+
 size_t heap_cantidad(heap_t* heap){
   return heap->cantidad;
 }

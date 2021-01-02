@@ -4,6 +4,8 @@
 #include "../juego.h"
 #include "gimnasio.h"
 #include "../interfaz/interfaz.h"
+#include "../heap/heap.h"
+
 #define MAX_RESERVA 1000
 #define SIN_POSICION -1
 #define EXITO 0
@@ -54,14 +56,13 @@ void imprimir_pokemones(pokemon_t* pokemones[MAX_RESERVA], size_t cantidad){
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
   int ancho_media_pantalla = (int)((w.ws_col - ANCHO_TABLA) / 2);
-  int alto_media_pantalla = (int)(w.ws_row - (cantidad)) / 2;
+  //int alto_media_pantalla = (int)(w.ws_row - (cantidad)) / 2;
 
   if(!pokemones){
       return;
   }
 
-  for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
-
+  //for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
   printf("%*s", ancho_media_pantalla, " ");
   printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
   printf("%*s", ancho_media_pantalla, " ");
@@ -83,7 +84,7 @@ void imprimir_pokemones(pokemon_t* pokemones[MAX_RESERVA], size_t cantidad){
   printf("%*s", ancho_media_pantalla, " ");
   printf("╚══════════════════════════════════════════════════════════════════════════════╝\n");
 
-  for(int i = 0; i < alto_media_pantalla; i++) printf("\n");
+  //for(int i = 0; i < 10; i++) printf("\n");
 }
 
 pantalla_t poke_reserva(juego_t* juego, int* posicion_combate, char nombre_reserva[MAX_NOMBRE]){
@@ -171,9 +172,115 @@ int cambiar_pokedex(juego_t* juego){
 }
 
 int ver_personaje(juego_t* juego){
+  pokemon_t* pokemones_combate[MAX_RESERVA];
+  pokemon_t* pokemones_reserva[MAX_RESERVA];
+
+  lista_iterador_t* iterador = lista_iterador_crear(juego->personaje.pokemones_combate);
+  size_t i = 0;
+  while(lista_iterador_tiene_siguiente(iterador)){
+    pokemon_t* pokemon_actual = (pokemon_t*)lista_iterador_elemento_actual(iterador);
+    pokemones_combate[i++] = pokemon_actual;
+    lista_iterador_avanzar(iterador);
+  }
+
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+  int ancho_media_pantalla = (int)((w.ws_col - ANCHO_TABLA) / 2);
+  system("clear");
+  printf("\n\n\n%*s", ancho_media_pantalla, " ");
+  printf(TITULO);
+  printf("Informacion del personaje\n\n");
+  printf(CERRAR_TITULO);
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("■ Nombre: %s\n\n", juego->personaje.nombre);
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("■ Pokemones de combate:\n");
+  imprimir_pokemones(pokemones_combate, i);
+  printf("\n%*s", ancho_media_pantalla, " ");
+  printf("■ Pokemones de reserva:\n");
+  size_t cantidad = arbol_recorrido_inorden(juego->personaje.pokemones_reserva, (void**)pokemones_reserva, MAX_RESERVA);
+  imprimir_pokemones(pokemones_reserva, cantidad);
+
+  printf(AMARILLO "\n%*s", ancho_media_pantalla, " ");
+  printf("presione enter para volver al gimnasio...");
+  int c;
+  while((c = getchar()) != '\n' && c != EOF);
+  printf(BLANCO);
   return 0;
 }
  
 int ver_gimnasio(juego_t* juego){
+  gimnasio_t* gim = heap_raiz(juego->gimnasios);
+  if(!gim)
+    return ERROR;
+
+  pokemon_t* pokemones_lider[MAX_RESERVA];
+
+  lista_iterador_t* iterador = lista_iterador_crear(gim->lider.pokemones);
+  size_t cantidad_pokemones_lider = 0;
+  while(lista_iterador_tiene_siguiente(iterador)){
+    pokemon_t* pokemon_actual = (pokemon_t*)lista_iterador_elemento_actual(iterador);
+    pokemones_lider[cantidad_pokemones_lider++] = pokemon_actual;
+    lista_iterador_avanzar(iterador);
+  }
+
+  entrenador_t* entrenadores[MAX_RESERVA];
+
+  iterador = lista_iterador_crear(gim->entrenadores);
+  size_t cantidad_entrenadores = 0;
+  while(lista_iterador_tiene_siguiente(iterador)){
+    entrenador_t* entrenador_actual = (entrenador_t*)lista_iterador_elemento_actual(iterador);
+    entrenadores[cantidad_entrenadores++] = entrenador_actual;
+    lista_iterador_avanzar(iterador);
+  }
+
+  pokemon_t* pokemones_entrenador[MAX_RESERVA];
+
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+  int ancho_media_pantalla = (int)((w.ws_col - ANCHO_TABLA) / 2);
+  system("clear");
+  printf("\n\n\n%*s", ancho_media_pantalla, " ");
+  printf(TITULO);
+  printf("Informacion del gimnasio\n\n");
+  printf(CERRAR_TITULO);
+
+  printf("%*s", ancho_media_pantalla, " ");
+  printf("■ Nombre: %s", gim->nombre);
+
+  printf("\n\n%*s", ancho_media_pantalla, " ");
+  printf("■ Dificultad: %lu", gim->dificultad);
+
+  printf("\n\n%*s", ancho_media_pantalla, " ");
+  printf("■ ID de batalla: %lu", gim->batalla_id);
+
+  printf("\n\n%*s", ancho_media_pantalla, " ");
+  printf("■ Pokemones del lider %s:\n", gim->lider.nombre);
+  imprimir_pokemones(pokemones_lider, cantidad_pokemones_lider);
+
+  if(cantidad_entrenadores > 0){  
+    printf("\n\n%*s", ancho_media_pantalla, " ");
+    printf("■ Entrenadores del gimnasio %s:", gim->nombre);
+    for(size_t i = 0; i < cantidad_entrenadores; i++){
+      printf("\n\n%*s", ancho_media_pantalla, " ");
+      printf("\t■ Pokemones de %s:\n", entrenadores[i]->nombre);
+      iterador = lista_iterador_crear(entrenadores[i]->pokemones);
+      size_t cantidad_pokemones_entrenador = 0;
+      while(lista_iterador_tiene_siguiente(iterador)){
+        pokemon_t* pokemon_actual = (pokemon_t*)lista_iterador_elemento_actual(iterador);
+        pokemones_entrenador[cantidad_pokemones_entrenador++] = pokemon_actual;
+        lista_iterador_avanzar(iterador);
+      }
+      imprimir_pokemones(pokemones_entrenador, cantidad_pokemones_entrenador);
+    }
+  }
+
+
+  printf("\n%*s", ancho_media_pantalla, " ");
+
+  printf(AMARILLO  "presione enter para volver al gimnasio..." BLANCO);
+  int c;
+  while((c = getchar()) != '\n' && c != EOF);
+
   return 0;
 }

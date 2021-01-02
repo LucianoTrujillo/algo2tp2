@@ -49,6 +49,8 @@ int probar_heap();
 
 void* heap_extraer_raiz(heap_t* heap);
 
+void* heap_raiz(heap_t* heap);
+
 size_t heap_cantidad(heap_t* heap);
 
 #endif /* __HEAP_H__ */

@@ -6,6 +6,7 @@
 #include "interfaz/interfaz.h"
 #include "inicio/inicio.h"
 #include "gimnasio/gimnasio.h"
+#include "batallas/batallas.h"
 
 #define ACTUALIZAR_PERSONAJE 0
 #define AGREGA_GIMNASIO 1
@@ -24,7 +25,6 @@
 #define CAMBIAR_POKEDEX_DERROTA 0
 #define REINTENTAR_GIMNASIO 1
 #define FINALIZAR_PARTIDA 2
-
 
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
@@ -93,8 +93,6 @@ menu_t menu_gym(juego_t* juego){
       cambiar_pokedex(juego);
       return GYM;
     case IR_BATALLA:
-      imprimir_consola("empieza la batalla. Acordate que podes cambiar tus pokemones de combate"
-                        "si no te va bien esta vez.");
       return BATALLA;
     default:
       return GYM;
@@ -102,20 +100,20 @@ menu_t menu_gym(juego_t* juego){
 }
 
 menu_t menu_batalla(juego_t* juego){
-  bool gano_gimnasio = false;
-  /*
-    Interfaz copadísima donde se ve los dos pokemones que pelean
-    mostrar quien gana, y abajo un mensajito para avanzar con enter
+  gimnasio_t* gimnasio = (gimnasio_t*)heap_raiz(juego->gimnasios);
+  estado_combate_t estado_combate = batallar(juego->personaje, gimnasio);
 
-    Acá va a estar la lógica para ir desapilando los entrenadores,
-    y acordarse que al pelean con los pokemones, ir avanzando con iteradores
-  */
-
-  if(gano_gimnasio){ //ganó el gimnasio entero...
-    return VICTORIA;
-  } else {
+  if(estado_combate == GANO)
+    imprimir_consola("le ganaste la batalla a este entrenador");
+    return GYM;
+  
+  if(estado_combate == PERDIO)
+    imprimir_consola("perdiste. Probar cambiando tus pokemones de batalla");
     return DERROTA;
-  }
+  
+  if(estado_combate == COMPLETO_GIMNASIO)
+    imprimir_consola("ganaste el gimnasio completo");
+    return VICTORIA;
 }
 
 menu_t menu_victoria(juego_t* juego){
@@ -242,7 +240,3 @@ int jugar(){
 
   return EXITO;
 }
-
-
-
-

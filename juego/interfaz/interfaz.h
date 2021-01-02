@@ -8,6 +8,11 @@
 #define MAX_OPCIONES 10
 #define MAX_MENSAJE 200
 
+#define TITULO "\x1b[37;4m"
+#define CERRAR_TITULO "\x1b[37;0m"
+#define AMARILLO "\x1b[33;1m"
+#define BLANCO "\x1b[37;1m"
+
 int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
 void imprimir_consola(char* mensaje);
 
