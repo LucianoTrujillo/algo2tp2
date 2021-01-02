@@ -304,6 +304,18 @@ void destruir_juego(juego_t* juego){
   heap_destruir(juego->gimnasios);
 }
 
+void mostrar_instrucciones(){
+  imprimir_consola("bienvenido al mejor juego de pokemon de la historia!");
+  imprimir_consola("el juego es muy sencillo! pero desafiante, presta      atencion...");
+  imprimir_consola("estos mensajitos lindos te van a aparecer para darte    informacion valiosa durante toda la partida.");
+  imprimir_consola("para moverte por los diferentes menus, usa las teclas  'w' y 's'."
+                  " Presionas enter para elegir la opcion sobre la cual estas parado.");
+  imprimir_consola("te recomiendo leer el README para entender mejor el juego. Aun asi, si tenes flojera, te entiendo."
+                   " Alguna vez jugaste al pokemon? mas te vale, es basicamente una version reducida del mismo.");
+  imprimir_consola("anda derrotando a los gimnasios y mejorando tu pokedex hasta ganar la partida.");
+  imprimir_consola("Te deseo mucha suerte y que lo disfrutes!");
+}
+
 int jugar(){
   menu_t menu_actual = INICIO;
   juego_t juego;
@@ -311,6 +323,7 @@ int jugar(){
   if(resultado == ERROR)
     return ERROR;
 
+  //mostrar_instrucciones();
   while(menu_actual != FIN){
     menu_actual = mostrar_menu(menu_actual, &juego);
   }

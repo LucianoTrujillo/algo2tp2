@@ -25,8 +25,8 @@
 #define ALTO_DISPLAY 25
 #define MAX_CARACTERES_LINEA_DISPLAY 55
 #define PADDING_DISPLAY 2
-#define VELOCIDAD_LETRAS 1//25
-#define VELOCIDAD_PAUSAS 1
+#define VELOCIDAD_LETRAS 25
+#define VELOCIDAD_PAUSAS 400
 
 #define MAX_OPCIONES 10
 
@@ -198,12 +198,23 @@ void imprimir_consola(char* mensaje){
     for(int i = 0; i < strlen(mensaje); i++){
         temp[i] = mensaje[i];
         mostrar_mensaje(temp, i + 1 == strlen(mensaje));
-        if(strchr(".,:;!?¡¿\t", temp[i]))
+        if(strchr(".,:;!?¡¿", temp[i]))
             delay(VELOCIDAD_PAUSAS);
         else
             delay(VELOCIDAD_LETRAS);
             
     }
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);
+}
+
+void imprimir_consola_inmediato(char* mensaje){
+
+    if(!mensaje || !*mensaje || strlen(mensaje) > (LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY)){
+        return;
+    }
+
+    mostrar_mensaje(mensaje, true);
     int c;
     while((c = getchar()) != '\n' && c != EOF);
 }

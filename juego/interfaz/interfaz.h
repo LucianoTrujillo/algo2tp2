@@ -17,5 +17,6 @@
 
 int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opciones, int opcion_seleccionada);
 void imprimir_consola(char* mensaje);
+void imprimir_consola_inmediato(char* mensaje);
 
 #endif /*TP2_INTERFAZ_H*/

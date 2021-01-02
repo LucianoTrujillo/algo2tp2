@@ -54,7 +54,6 @@ bool gano_combate(void* pokemon_pj, void* pokemon_enemigo, size_t batalla_id, bo
   if(!simulacion){
     char texto[LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY];
     sprintf(texto, 
-      "                                                       "
       "Tu pokemon: %-43s"
       "Velocidad: %-44i"
       "Ataque: %-47i"
@@ -80,7 +79,7 @@ bool gano_combate(void* pokemon_pj, void* pokemon_enemigo, size_t batalla_id, bo
       ganador == GANO_PRIMERO ? pokemon_1->nombre : pokemon_2->nombre
     );
 
-    imprimir_consola(texto);
+    imprimir_consola_inmediato(texto);
   }
   
   
