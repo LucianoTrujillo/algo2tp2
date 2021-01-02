@@ -103,24 +103,29 @@ menu_t menu_batalla(juego_t* juego){
   gimnasio_t* gimnasio = (gimnasio_t*)heap_raiz(juego->gimnasios);
   estado_combate_t estado_combate = batallar(juego->personaje, gimnasio);
 
-  if(estado_combate == GANO)
+  if(estado_combate == GANO){
     imprimir_consola("le ganaste la batalla a este entrenador");
     return GYM;
+  }
   
-  if(estado_combate == PERDIO)
+  if(estado_combate == PERDIO){
     imprimir_consola("perdiste. Probar cambiando tus pokemones de batalla");
     return DERROTA;
-  
-  if(estado_combate == COMPLETO_GIMNASIO)
+  }
+
+  if(estado_combate == COMPLETO_GIMNASIO){
     imprimir_consola("ganaste el gimnasio completo");
     return VICTORIA;
+  }
+  
+  return GYM;
 }
 
 menu_t menu_victoria(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Cambiar Pokemon de batalla",
-    "Ir a proximo gimnasio"
-    "Robar pókemon de lider"};
+    "Ir a proximo gimnasio",
+    "Robar pokemon de lider"};
 
   int cantidad_opciones = 3;
 
