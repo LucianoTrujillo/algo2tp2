@@ -53,7 +53,8 @@ int leer_pokemon(FILE* archivo, pokemon_t* pokemon){
         pokemon->nombre,
         &(pokemon->velocidad),
         &(pokemon->ataque),
-        &(pokemon->defensa)) 
+        &(pokemon->defensa),
+        &(pokemon->id)) 
         == CANTIDAD_LEIDOS_POKEMON){
     return EXITO;
     } else {
@@ -154,8 +155,11 @@ int actualizar_personaje(juego_t* juego){
     imprimir_consola("Informacion del entrenador actualizada correctamente");
   }
 
-  if(juego->personaje.pokemones_combate->cantidad == 0)
+  lista_con_cada_elemento(juego->personaje.pokemones_combate, imprimir_pokemon, NULL);
+  if(juego->personaje.pokemones_combate->cantidad == 0){
+    fclose(archivo);
     return ERROR;
+  }
 
   fclose(archivo);
   return EXITO;

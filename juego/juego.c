@@ -59,6 +59,34 @@ menu_t proximo_gimnasio_o_terminar(juego_t* juego){
   }
 }
 
+bool pudo_tomar_prestado_pokemon(juego_t* juego){
+  gimnasio_t* gim_actual = (gimnasio_t*)heap_raiz(juego->gimnasios);
+  pokemon_t* pokemones_lider[MAX_POKEMONES];
+  size_t cantidad_pokemones_lider = llenar_vector_pokemon_lista(gim_actual->lider.pokemones, pokemones_lider);
+  int id;
+  system("clear");
+  printf("\n\n\n\n");
+  imprimir_pokemones(pokemones_lider, cantidad_pokemones_lider);
+  printf("\n\nIngrese el ID del pokemon que desea robar. Digo... Tomar prestado. (-1 si se arrepiente): ");
+  scanf("%i", &id);
+  while ((getchar()) != '\n');
+
+  if(id == SIN_ID)
+    return false;
+  
+  int posicion = posicion_pokemon_con_id(gim_actual->lider.pokemones, id);
+  while((posicion < 0 || posicion >= cantidad_pokemones_lider)){
+    printf("Asegurate que el ID exista e ingresalo de nuevo: ");
+    scanf("%i", &id);
+    posicion = posicion_pokemon_con_id(gim_actual->lider.pokemones, id);
+    while ((getchar()) != '\n');
+  }
+  
+  pokemon_t* pokemon_prestado = lista_elemento_en_posicion(gim_actual->lider.pokemones,(size_t)posicion);
+  arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
+  return true;
+}
+
 menu_t menu_inicio(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Ingresar entrenador principal",
@@ -153,10 +181,8 @@ menu_t menu_victoria(juego_t* juego){
     case PROXIMO_GIMNASIO:
       return proximo_gimnasio_o_terminar(juego);
     case ROBAR_POKEMON:
-      /* interfaz bonita para elegir pokemon del lider y coopiarse el pokemon y agregarlo a la lista nuestra
-         remover opción del array de opciones. Podrá usarse la lógica de cambiar pokedex en cuanto al MOSTRADO? maybe...
-      */
-      cantidad_opciones--;
+      if(pudo_tomar_prestado_pokemon(juego))
+        cantidad_opciones--;
       return VICTORIA;
       break;
     default:
@@ -202,7 +228,7 @@ int comparar_pokemones(void* pokemon_1, void* pokemon_2){
   if(!pokemon_1 || !pokemon_2)
     return 1;
 
-  return strcmp(((pokemon_t*)(pokemon_1))->nombre, ((pokemon_t*)(pokemon_2))->nombre);
+  return (int)(((pokemon_t*)(pokemon_1))->id) - (int)(((pokemon_t*)(pokemon_2))->id);
 }
 
 int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2){

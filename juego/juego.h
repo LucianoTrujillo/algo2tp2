@@ -18,7 +18,8 @@ typedef struct pokemon{
   char nombre[MAX_NOMBRE];
   int velocidad;
   int defensa;
-  int ataque; 
+  int ataque;
+  int id;
 } pokemon_t;
 
 typedef struct entrenador {
