@@ -7,6 +7,8 @@
 
 #define MAX_OPCIONES 10
 #define MAX_MENSAJE 200
+#define LINEAS_DISPLAY 17
+#define MAX_CARACTERES_LINEA_DISPLAY 55
 
 #define TITULO "\x1b[37;4m"
 #define CERRAR_TITULO "\x1b[37;0m"

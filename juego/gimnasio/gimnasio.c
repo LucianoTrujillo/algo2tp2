@@ -25,7 +25,7 @@ typedef enum {
   CANT_PANTALLAS } pantalla_t;
 typedef pantalla_t funcion_pantalla(juego_t* juego, int* id_combate, int* id_reserva);
 
-void imprimir_pokemones(pokemon_t* pokemones[MAX_POKEMONES], size_t cantidad){
+void imprimir_pokemones(pokemon_t** pokemones, size_t cantidad){
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
   int ancho_media_pantalla = (int)((w.ws_col - ANCHO_TABLA) / 2);
@@ -58,7 +58,7 @@ void imprimir_pokemones(pokemon_t* pokemones[MAX_POKEMONES], size_t cantidad){
   printf("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 }
 
-size_t llenar_vector_pokemon_lista(lista_t* lista, pokemon_t* pokemones[MAX_POKEMONES]){
+size_t llenar_vector_pokemon_lista(lista_t* lista, pokemon_t** pokemones){
   lista_iterador_t* iterador = lista_iterador_crear(lista);
   size_t cantidad = 0;
   while(lista_iterador_tiene_siguiente(iterador)){
@@ -86,7 +86,7 @@ int posicion_pokemon_con_id(lista_t* pokemones, int id){
 pantalla_t poke_combate(juego_t* juego, int* id_combate, int* id_reserva){
   system("clear");
   lista_t* pokemones_combate = juego->personaje.pokemones_combate;
-  pokemon_t* vector_pokemones[MAX_POKEMONES];
+  pokemon_t* vector_pokemones[MAX_POKEMONES_BATALLA];
   int input = SIN_POSICION;
   size_t cantidad = llenar_vector_pokemon_lista(pokemones_combate, vector_pokemones);
   printf("\n\n\n\n");
@@ -201,7 +201,7 @@ int cambiar_pokedex(juego_t* juego){
 }
 
 int ver_personaje(juego_t* juego){
-  pokemon_t* pokemones_combate[MAX_POKEMONES];
+  pokemon_t* pokemones_combate[MAX_POKEMONES_BATALLA];
   pokemon_t* pokemones_reserva[MAX_POKEMONES];
 
   size_t cantidad_combate = llenar_vector_pokemon_lista(juego->personaje.pokemones_combate, pokemones_combate);
@@ -237,10 +237,10 @@ int ver_gimnasio(juego_t* juego){
   if(!gim)
     return ERROR;
 
-  pokemon_t* pokemones_lider[MAX_POKEMONES];
+  pokemon_t* pokemones_lider[MAX_POKEMONES_BATALLA];
   size_t cantidad_pokemones_lider = llenar_vector_pokemon_lista(gim->lider.pokemones, pokemones_lider);
   
-  entrenador_t* entrenadores[MAX_POKEMONES];
+  entrenador_t* entrenadores[MAX_ENTRENADORES];
   lista_iterador_t* iterador = lista_iterador_crear(gim->entrenadores);
   size_t cantidad_entrenadores = 0;
   while(lista_iterador_tiene_siguiente(iterador)){
@@ -249,7 +249,7 @@ int ver_gimnasio(juego_t* juego){
     lista_iterador_avanzar(iterador);
   }
 
-  pokemon_t* pokemones_entrenador[MAX_POKEMONES];
+  pokemon_t* pokemones_entrenador[MAX_POKEMONES_BATALLA];
 
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);

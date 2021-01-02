@@ -1,7 +1,6 @@
 #ifndef __GIMNASIO_H_
 #define __GIMNASIO_H_
 #include "../juego.h"
-#define MAX_POKEMONES 1000
 #define SIN_ID -1
 
 int ver_personaje(juego_t* juego);
