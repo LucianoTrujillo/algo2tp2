@@ -85,7 +85,6 @@ bool pudo_tomar_prestado_pokemon(juego_t* juego){
   arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
   imprimir_consola("pokemon robado exitosamente... Digo tomado prestado");
   return true;
-
 }
 
 menu_t menu_inicio(juego_t* juego){
@@ -259,13 +258,17 @@ void destruir_pokemon(void* pokemon){
 }
 
 void destruir_entrenador(void* trainer){
-  entrenador_t* entrenador = (entrenador_t*)trainer;
-  lista_destruir(entrenador->pokemones, destruir_pokemon);
+  if(trainer){
+    entrenador_t* entrenador = (entrenador_t*)trainer;
+    lista_destruir(entrenador->pokemones, destruir_pokemon);
+  }
 }
 
 void destruir_gimnasio(void* gim){
+  if(gim){
   gimnasio_t* gimnasio = (gimnasio_t*)gim;
   lista_destruir(gimnasio->entrenadores, destruir_entrenador);
+  }
 }
 
 int inicializar_juego(juego_t* juego){

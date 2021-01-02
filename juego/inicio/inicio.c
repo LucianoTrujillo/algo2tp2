@@ -77,7 +77,7 @@ int leer_pokemones_personaje(FILE* archivo, void* entrenador, int (*insertar)(vo
   int contador = 0;
   while(leer_pokemon_personaje(archivo, pokemon) == EXITO){
     if(insertar(entrenador, pokemon, &contador) == ERROR){
-      free(pokemon);
+      destruir_pokemon(pokemon);
       return ERROR;
     }
     pokemon = calloc(1, sizeof(pokemon_t));
@@ -123,7 +123,7 @@ FILE* obtener_archivo_2(char* nombre){
 }
 
 int actualizar_personaje(juego_t* juego){
-  FILE* archivo = obtener_archivo_2("entrenador/test.txt");
+  FILE* archivo = obtener_archivo("Ingrese la ruta del archivo del personaje: ");
   if(!archivo){
     return ERROR;
   }
@@ -134,18 +134,21 @@ int actualizar_personaje(juego_t* juego){
     return ERROR;
   }
 
-  //hacer que libere memoria de elementos
   lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon);
   juego->personaje.pokemones_combate = lista_crear();
 
   if(!juego->personaje.pokemones_combate){
+    fclose(archivo);
     return ERROR;
   }
 
   arbol_destruir(juego->personaje.pokemones_reserva);
   juego->personaje.pokemones_reserva = arbol_crear(comparar_pokemones, destruir_pokemon);
-  if(!juego->personaje.pokemones_reserva)
+  if(!juego->personaje.pokemones_reserva){
+    fclose(archivo);
+    lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon);
     return ERROR;
+  }
 
   int resultado = leer_pokemones_personaje(archivo, (void*)(&(juego->personaje)), insertar_pokemon_personaje);
 
@@ -155,13 +158,9 @@ int actualizar_personaje(juego_t* juego){
     imprimir_consola("Informacion del entrenador actualizada correctamente");
   }
 
-  lista_con_cada_elemento(juego->personaje.pokemones_combate, imprimir_pokemon, NULL);
-  if(juego->personaje.pokemones_combate->cantidad == 0){
-    fclose(archivo);
-    return ERROR;
-  }
-
   fclose(archivo);
+  if(juego->personaje.pokemones_combate->cantidad == 0)
+    return ERROR;
   return EXITO;
 }
 
@@ -211,15 +210,14 @@ void agregar_entrenador_gimnasio(FILE* archivo, entrenador_t** entrenador_actual
   (*entrenador_actual) = calloc(1, sizeof(entrenador_t));
   if((*entrenador_actual)){
     (*entrenador_actual)->pokemones = lista_crear();
-    if(!(*entrenador_actual)->pokemones){
-      free((*entrenador_actual));
-      (*entrenador_actual) = NULL;
-    } else if(leer_nombre_entrenador(archivo, (*entrenador_actual)->nombre) == ERROR){
-      (*entrenador_actual) = NULL;
-    } else if(lista_insertar(gim->entrenadores, (*entrenador_actual)) == ERROR) {
-        (*entrenador_actual) = NULL;
-    }
+    if((*entrenador_actual)->pokemones)
+     if(leer_nombre_entrenador(archivo, (*entrenador_actual)->nombre) == EXITO)
+       if(lista_insertar(gim->entrenadores, (*entrenador_actual)) == EXITO)
+        return;
   }
+
+  destruir_entrenador(*entrenador_actual);
+  (*entrenador_actual) = NULL;
 }
 
 void agregar_pokemon_gimnasio(FILE* archivo, pokemon_t* pokemon, entrenador_t** entrenador){
@@ -234,11 +232,12 @@ void agregar_pokemon_gimnasio(FILE* archivo, pokemon_t* pokemon, entrenador_t** 
     if(lista_insertar((*entrenador)->pokemones, pokemon) == EXITO)
       return;
 
+  destruir_pokemon(pokemon);
   *entrenador = NULL;
 }
 
 int agregar_gimnasio(juego_t* juego){
-  FILE* archivo = obtener_archivo_2("gimnasio/test.txt");
+  FILE* archivo = obtener_archivo("Ingrese la ruta del archivo del gimnasio: ");
   if(!archivo){
     return ERROR;
   }
@@ -290,6 +289,13 @@ int agregar_gimnasio(juego_t* juego){
       }
     }
   } while(entrenador_actual);
+
+  if(lista_vacia(nuevo_gim->lider.pokemones)){
+    lista_destruir(nuevo_gim->lider.pokemones, destruir_pokemon);
+    free(nuevo_gim);
+    fclose(archivo);
+    return ERROR;
+  }
   heap_insertar(juego->gimnasios, (void*)nuevo_gim);
   fclose(archivo);
   imprimir_consola("gimnasio agregado correctamente");

@@ -91,23 +91,26 @@ bool gano_batalla(personaje_t personaje, entrenador_t* entrenador, size_t batall
   lista_iterador_t* iterador_pokemones_pj = lista_iterador_crear(personaje.pokemones_combate);
   lista_iterador_t* iterador_pokemones_enemigo = lista_iterador_crear(entrenador->pokemones);
 
-  while(lista_iterador_tiene_siguiente(iterador_pokemones_pj) && lista_iterador_tiene_siguiente(iterador_pokemones_enemigo)){
-    if(gano_combate(lista_iterador_elemento_actual(iterador_pokemones_pj), lista_iterador_elemento_actual(iterador_pokemones_enemigo), batalla_id, simulacion)){
+  while(lista_iterador_tiene_siguiente(iterador_pokemones_pj) && 
+        lista_iterador_tiene_siguiente(iterador_pokemones_enemigo)){
+    if(gano_combate(
+        lista_iterador_elemento_actual(iterador_pokemones_pj),
+        lista_iterador_elemento_actual(iterador_pokemones_enemigo),
+        batalla_id,
+        simulacion)){
       lista_iterador_avanzar(iterador_pokemones_enemigo);
     } else {
       lista_iterador_avanzar(iterador_pokemones_pj);
     }
   }
 
-  if(lista_iterador_tiene_siguiente(iterador_pokemones_pj)){
-    lista_iterador_destruir(iterador_pokemones_pj);
-    lista_iterador_destruir(iterador_pokemones_enemigo);
-    return true;
-  }
+  bool gano = false;
+  if(lista_iterador_tiene_siguiente(iterador_pokemones_pj))
+    gano = true;
 
   lista_iterador_destruir(iterador_pokemones_pj);
   lista_iterador_destruir(iterador_pokemones_enemigo);
-  return false;
+  return gano;
 }
 
 estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim, bool simulacion){

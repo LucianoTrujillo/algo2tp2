@@ -66,6 +66,7 @@ size_t llenar_vector_pokemon_lista(lista_t* lista, pokemon_t** pokemones){
     pokemones[cantidad++] = pokemon_actual;
     lista_iterador_avanzar(iterador);
   }
+  lista_iterador_destruir(iterador);
   return cantidad;
 }
 
@@ -80,6 +81,7 @@ int posicion_pokemon_con_id(lista_t* pokemones, int id){
     posicion++;
     lista_iterador_avanzar(iterador);
   }
+  lista_iterador_destruir(iterador);
   return SIN_POSICION;
 }
 
@@ -149,19 +151,11 @@ pantalla_t poke_intercambio(juego_t* juego, int* id_combate, int* id_reserva){
 
   int posicion_combate = posicion_pokemon_con_id(juego->personaje.pokemones_combate, *id_combate);
   pokemon_t* pokemon_combate = lista_elemento_en_posicion(pokemones_combate, (size_t)posicion_combate);
-  if(!pokemon_combate){
-    imprimir_consola("no se pudo realizar el intercambio");
-    return VOLVER;
-  }
 
   pokemon_t* pokemon_reserva;
   pokemon_t comparador;
   comparador.id = *id_reserva;
   pokemon_reserva = arbol_buscar(juego->personaje.pokemones_reserva, &comparador);
-  if(!pokemon_reserva){
-    imprimir_consola("no se pudo realizar el intercambio");
-    return VOLVER;
-  }
 
   char texto[MAX_MENSAJE];
   sprintf(texto, "Intercambiando %s con %s...", pokemon_combate->nombre, pokemon_reserva->nombre);
@@ -190,6 +184,11 @@ pantalla_t mostrar_pantalla(pantalla_t pantalla_actual, juego_t *juego, int* id_
 }
 
 int cambiar_pokedex(juego_t* juego){
+  if(arbol_vacio(juego->personaje.pokemones_reserva)){
+    imprimir_consola("debes tener al menos 1 pokemon en reserva para poder hacer un intercambio...");
+    return ERROR;
+  }
+
   pantalla_t pantalla_actual = PANTALLA_ELEGIR_POKEMON_INTERCAMBIAR_COMBATE;
   int id_combate = SIN_POSICION;
   int id_reserva = SIN_POSICION;
@@ -197,7 +196,7 @@ int cambiar_pokedex(juego_t* juego){
   while(pantalla_actual != VOLVER){
     pantalla_actual = mostrar_pantalla(pantalla_actual, juego, &id_combate, &id_reserva);
   }
-  return 0;
+  return EXITO;
 }
 
 int ver_personaje(juego_t* juego){
@@ -248,6 +247,7 @@ int ver_gimnasio(juego_t* juego){
     entrenadores[cantidad_entrenadores++] = entrenador_actual;
     lista_iterador_avanzar(iterador);
   }
+  lista_iterador_destruir(iterador);
 
   pokemon_t* pokemones_entrenador[MAX_POKEMONES_BATALLA];
 
