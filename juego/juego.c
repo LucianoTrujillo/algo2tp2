@@ -44,6 +44,21 @@ menu_t tratar_comenzar(juego_t* juego){
   return GYM;
 }
 
+menu_t proximo_gimnasio_o_terminar(juego_t* juego){
+  if(heap_cantidad(juego->gimnasios) == 0){
+    imprimir_consola("felicidades! Sos troesma pokemon");
+    return FIN;
+  }
+
+  heap_extraer_raiz(juego->gimnasios);
+  if(heap_cantidad(juego->gimnasios) == 0){
+    imprimir_consola("felicidades! Sos troesma pokemon");
+    return FIN;
+  } else {
+    return GYM;
+  }
+}
+
 menu_t menu_inicio(juego_t* juego){
   char* opciones[MAX_OPCIONES] = {
     "Ingresar entrenador principal",
@@ -133,11 +148,10 @@ menu_t menu_victoria(juego_t* juego){
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_VICTORIA:
-      /* misma Interfaz copadísima que usé para el inicio, DRY CODE PLEASE para el cambio de pokmeones de reserva a batallar y viceversa*/
+      cambiar_pokedex(juego);
       return VICTORIA;
     case PROXIMO_GIMNASIO:
-      /* Si no hay mas gimnasios, mostrar que se convirtió en Troesma pokemon y return FIN*/
-      return GYM;
+      return proximo_gimnasio_o_terminar(juego);
     case ROBAR_POKEMON:
       /* interfaz bonita para elegir pokemon del lider y coopiarse el pokemon y agregarlo a la lista nuestra
          remover opción del array de opciones. Podrá usarse la lógica de cambiar pokedex en cuanto al MOSTRADO? maybe...
@@ -160,14 +174,12 @@ menu_t menu_derrota(juego_t* juego){
 
   switch (opcion_elegida){
     case CAMBIAR_POKEDEX_DERROTA:
-      /* misma Interfaz copadísima que usé para el inicio, DRY CODE PLEASE para el cambio de pokmeones de reserva a batallar y viceversa*/
+      cambiar_pokedex(juego);
       return DERROTA;
       break;
     case REINTENTAR_GIMNASIO:
-      /* Ir al gym again, quizá cambio los pokemones... */
       return GYM;
     case FINALIZAR_PARTIDA:
-      /* Chau chau adiós!*/
       return FIN;
     default:
       return DERROTA;
