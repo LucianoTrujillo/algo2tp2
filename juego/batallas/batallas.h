@@ -28,6 +28,6 @@ int funcion_batalla_4(void* pkm_1, void* pkm_2);
 
 int funcion_batalla_5(void* pkm_1, void* pkm_2);
 
-estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim);
+estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim, bool simulacion);
 
 #endif /* __BATALLAS_H__ */

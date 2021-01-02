@@ -8,44 +8,6 @@
 #include "juego/heap/heap.h"
 #include "pa2mm.h"
 
-
-static int inicializar_juego(juego_t* juego){
-  juego->simulacion = false;
-  
-  memset(juego->personaje.nombre, '\0', MAX_NOMBRE);
-
-  juego->personaje.pokemones_reserva = arbol_crear(comparar_pokemones, destruir_pokemon);
-  if(!juego->personaje.pokemones_reserva)
-    return ERROR;
-  
-  juego->personaje.pokemones_combate = lista_crear();
-
-  if(!juego->personaje.pokemones_combate){
-    arbol_destruir(juego->personaje.pokemones_reserva);
-    return ERROR;
-  }
-  
-  juego->gimnasios = heap_crear(comparar_gimnasios, NULL);
-
-  if(!juego->gimnasios){
-    arbol_destruir(juego->personaje.pokemones_reserva);
-    lista_destruir(juego->personaje.pokemones_combate);
-    return ERROR;
-  }
-
-  return EXITO;
-}
-
-int probar_inicio(){
-  pa2m_nuevo_grupo("Pruebas Inicio (manejo de archivos)");
-  juego_t juego;
-  inicializar_juego(&juego);
-  actualizar_personaje(&juego);
-  agregar_gimnasio(&juego);
-  pa2m_mostrar_reporte();
-  return EXITO;
-}
-
 static int comparador(void* elemento_1, void* elemento_2){
     if(*(int*)(elemento_1) == *(int*)elemento_2)
       return 0;
@@ -108,6 +70,5 @@ int probar_heap(){
 
 int probar(){
   probar_heap();
-  probar_inicio();
   return __pa2m_cantidad_de_pruebas_fallidas == 0;
 }

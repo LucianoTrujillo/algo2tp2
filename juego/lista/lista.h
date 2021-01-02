@@ -21,6 +21,13 @@ typedef struct lista_iterador{
 }lista_iterador_t;
 
 /*
+ * Destructor de elementos. Cada vez que un elemento deja el arbol
+ * (arbol_borrar o arbol_destruir) se invoca al destructor pasandole
+ * el elemento.
+ */
+typedef void (*lista_liberar_elemento)(void*);
+
+/*
  * Crea la lista reservando la memoria necesaria.
  * Devuelve un puntero a la lista creada o NULL en caso de error.
  */
@@ -118,7 +125,7 @@ void* lista_primero(lista_t* lista);
 /*
  * Libera la memoria reservada por la lista.
  */
-void lista_destruir(lista_t* lista);
+void lista_destruir(lista_t* lista, lista_liberar_elemento destructor);
 
 /*
  * Crea un iterador para una lista. El iterador creado es válido desde

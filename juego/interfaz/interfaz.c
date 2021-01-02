@@ -129,7 +129,7 @@ void mostrar_mensaje(char* mensaje, bool mostrar_continuar){
 
     for(int i = 0; i <= cant_lineas; i++){
         int cant_letras_linea = (int)(strlen(mensaje) > MAX_CARACTERES_LINEA_DISPLAY ? MAX_CARACTERES_LINEA_DISPLAY : strlen(mensaje));
-        strncpy(texto[i], mensaje, cant_letras_linea);
+        strncpy(texto[i], mensaje, (size_t)cant_letras_linea);
         texto[i][cant_letras_linea] = '\0';
         mensaje+=cant_letras_linea;
     }

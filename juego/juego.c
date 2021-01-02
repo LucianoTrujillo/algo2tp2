@@ -40,7 +40,6 @@ menu_t tratar_comenzar(juego_t* juego){
     return INICIO;
   }
   
-  imprimir_consola("empieza la aventura, mucha suerte");
   return GYM;
 }
 
@@ -86,6 +85,7 @@ bool pudo_tomar_prestado_pokemon(juego_t* juego){
   arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
   imprimir_consola("pokemon robado exitosamente... Digo tomado prestado");
   return true;
+
 }
 
 menu_t menu_inicio(juego_t* juego){
@@ -117,6 +117,10 @@ menu_t menu_inicio(juego_t* juego){
 }
 
 menu_t menu_gym(juego_t* juego){
+  if(juego->simulacion){
+    return BATALLA;
+  }
+
   char* opciones[MAX_OPCIONES] = {
     "Ver personaje y pokedex",
     "Ver gimasio a combatir",
@@ -145,20 +149,23 @@ menu_t menu_gym(juego_t* juego){
 
 menu_t menu_batalla(juego_t* juego){
   gimnasio_t* gimnasio = (gimnasio_t*)heap_raiz(juego->gimnasios);
-  estado_combate_t estado_combate = batallar(juego->personaje, gimnasio);
+  estado_combate_t estado_combate = batallar(juego->personaje, gimnasio, juego->simulacion);
 
   if(estado_combate == GANO){
-    imprimir_consola("le ganaste la batalla a este entrenador");
+    if(!juego->simulacion)
+      imprimir_consola("le ganaste la batalla a este entrenador");
     return GYM;
   }
   
   if(estado_combate == PERDIO){
-    imprimir_consola("perdiste. Probar cambiando tus pokemones de batalla");
+    if(!juego->simulacion)
+      imprimir_consola("perdiste. Probar cambiando tus pokemones de batalla");
     return DERROTA;
   }
 
   if(estado_combate == COMPLETO_GIMNASIO){
-    imprimir_consola("ganaste el gimnasio completo");
+    if(!juego->simulacion)
+      imprimir_consola("ganaste el gimnasio completo");
     return VICTORIA;
   }
   
@@ -166,6 +173,10 @@ menu_t menu_batalla(juego_t* juego){
 }
 
 menu_t menu_victoria(juego_t* juego){
+
+  if(juego->simulacion)
+    return proximo_gimnasio_o_terminar(juego);
+    
   char* opciones[MAX_OPCIONES] = {
     "Cambiar Pokemon de batalla",
     "Ir a proximo gimnasio",
@@ -192,6 +203,11 @@ menu_t menu_victoria(juego_t* juego){
 }
 
 menu_t menu_derrota(juego_t* juego){
+  if(juego->simulacion){
+    imprimir_consola("Perdiste la partida");
+    return FIN;
+  }
+
   char* opciones[MAX_OPCIONES] = {
     "Cambiar Pokemon de batalla",
     "Reintentar el gimnasio",
@@ -239,7 +255,17 @@ int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2){
 }
 
 void destruir_pokemon(void* pokemon){
-    free(pokemon);
+  free(pokemon);
+}
+
+void destruir_entrenador(void* trainer){
+  entrenador_t* entrenador = (entrenador_t*)trainer;
+  lista_destruir(entrenador->pokemones, destruir_pokemon);
+}
+
+void destruir_gimnasio(void* gim){
+  gimnasio_t* gimnasio = (gimnasio_t*)gim;
+  lista_destruir(gimnasio->entrenadores, destruir_entrenador);
 }
 
 int inicializar_juego(juego_t* juego){
@@ -258,15 +284,21 @@ int inicializar_juego(juego_t* juego){
     return ERROR;
   }
   
-  juego->gimnasios = heap_crear(comparar_gimnasios, NULL);
+  juego->gimnasios = heap_crear(comparar_gimnasios, destruir_gimnasio);
 
   if(!juego->gimnasios){
     arbol_destruir(juego->personaje.pokemones_reserva);
-    lista_destruir(juego->personaje.pokemones_combate);
+    lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon);
     return ERROR;
   }
 
   return EXITO;
+}
+
+void destruir_juego(juego_t* juego){
+  lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon); 
+  arbol_destruir(juego->personaje.pokemones_reserva);
+  heap_destruir(juego->gimnasios);
 }
 
 int jugar(){
@@ -281,6 +313,6 @@ int jugar(){
   }
 
   imprimir_consola("Chau! Esperamos verte pronto...");
-
+  destruir_juego(&juego);
   return EXITO;
 }

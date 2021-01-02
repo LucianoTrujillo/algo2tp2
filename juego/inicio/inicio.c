@@ -71,7 +71,7 @@ int leer_pokemon_personaje(FILE* archivo, pokemon_t* pokemon){
 }
 
 int leer_pokemones_personaje(FILE* archivo, void* entrenador, int (*insertar)(void* entrenador, pokemon_t* pokemon, int* contador)){
-  pokemon_t* pokemon = malloc(sizeof(pokemon_t));
+  pokemon_t* pokemon = calloc(1, sizeof(pokemon_t));
   if(!pokemon)
     return ERROR;
   int contador = 0;
@@ -80,11 +80,11 @@ int leer_pokemones_personaje(FILE* archivo, void* entrenador, int (*insertar)(vo
       free(pokemon);
       return ERROR;
     }
-
-    pokemon = malloc(sizeof(pokemon_t));
+    pokemon = calloc(1, sizeof(pokemon_t));
     if(!pokemon)
       return ERROR;
   }
+
   return EXITO;
 }
 
@@ -135,7 +135,7 @@ int actualizar_personaje(juego_t* juego){
   }
 
   //hacer que libere memoria de elementos
-  lista_destruir(juego->personaje.pokemones_combate);
+  lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon);
   juego->personaje.pokemones_combate = lista_crear();
 
   if(!juego->personaje.pokemones_combate){

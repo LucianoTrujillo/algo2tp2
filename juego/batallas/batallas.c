@@ -45,51 +45,54 @@ funcion_batalla* const batallas[CANTIDAD_TIPOS_BATALLA] = {
     funcion_batalla_4,
     funcion_batalla_5
 };
-bool gano_combate(void* pokemon_pj, void* pokemon_enemigo, size_t batalla_id){
+bool gano_combate(void* pokemon_pj, void* pokemon_enemigo, size_t batalla_id, bool simulacion){
   pokemon_t* pokemon_1 = (pokemon_t*)pokemon_pj;
   pokemon_t* pokemon_2 = (pokemon_t*)pokemon_enemigo;
 
   int ganador = batallas[batalla_id - 1](pokemon_pj, pokemon_enemigo);
 
-  char texto[LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY];
-  sprintf(texto, 
-    "                                                       "
-    "Tu pokemon: %-43s"
-    "Velocidad: %-44i"
-    "Ataque: %-47i"
-    "Defensa: %-46i"
-    "                                                       "
-    "Pokemon enemigo: %-38s"
-    "Velocidad: %-44i"
-    "Ataque: %-47i"
-    "Defensa: %-46i"
-    "                                                       "
-    "-------------------------------------------------------"
-    "                                                       "
-    "GANADOR: %-46s"
-    ,
-    pokemon_1->nombre,
-    pokemon_1->velocidad,
-    pokemon_1->ataque,
-    pokemon_1->defensa,
-    pokemon_2->nombre,
-    pokemon_2->velocidad,
-    pokemon_2->ataque,
-    pokemon_2->defensa,
-    ganador == GANO_PRIMERO ? pokemon_1->nombre : pokemon_2->nombre
-  );
+  if(!simulacion){
+    char texto[LINEAS_DISPLAY * MAX_CARACTERES_LINEA_DISPLAY];
+    sprintf(texto, 
+      "                                                       "
+      "Tu pokemon: %-43s"
+      "Velocidad: %-44i"
+      "Ataque: %-47i"
+      "Defensa: %-46i"
+      "                                                       "
+      "Pokemon enemigo: %-38s"
+      "Velocidad: %-44i"
+      "Ataque: %-47i"
+      "Defensa: %-46i"
+      "                                                       "
+      "-------------------------------------------------------"
+      "                                                       "
+      "GANADOR: %-46s"
+      ,
+      pokemon_1->nombre,
+      pokemon_1->velocidad,
+      pokemon_1->ataque,
+      pokemon_1->defensa,
+      pokemon_2->nombre,
+      pokemon_2->velocidad,
+      pokemon_2->ataque,
+      pokemon_2->defensa,
+      ganador == GANO_PRIMERO ? pokemon_1->nombre : pokemon_2->nombre
+    );
 
-  imprimir_consola(texto);
+    imprimir_consola(texto);
+  }
+  
   
   return ganador == GANO_PRIMERO;
 }
 
-bool gano_batalla(personaje_t personaje, entrenador_t* entrenador, size_t batalla_id){
+bool gano_batalla(personaje_t personaje, entrenador_t* entrenador, size_t batalla_id, bool simulacion){
   lista_iterador_t* iterador_pokemones_pj = lista_iterador_crear(personaje.pokemones_combate);
   lista_iterador_t* iterador_pokemones_enemigo = lista_iterador_crear(entrenador->pokemones);
 
   while(lista_iterador_tiene_siguiente(iterador_pokemones_pj) && lista_iterador_tiene_siguiente(iterador_pokemones_enemigo)){
-    if(gano_combate(lista_iterador_elemento_actual(iterador_pokemones_pj), lista_iterador_elemento_actual(iterador_pokemones_enemigo), batalla_id)){
+    if(gano_combate(lista_iterador_elemento_actual(iterador_pokemones_pj), lista_iterador_elemento_actual(iterador_pokemones_enemigo), batalla_id, simulacion)){
       lista_iterador_avanzar(iterador_pokemones_enemigo);
     } else {
       lista_iterador_avanzar(iterador_pokemones_pj);
@@ -107,18 +110,18 @@ bool gano_batalla(personaje_t personaje, entrenador_t* entrenador, size_t batall
   return false;
 }
 
-estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim){
+estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim, bool simulacion){
   if(!gim)
     return COMPLETO_GIMNASIO;
 
   lista_t* entrenadores = gim->entrenadores;
 
   if(!lista_vacia(entrenadores)){
-    if(gano_batalla(personaje, lista_tope(entrenadores), gim->batalla_id)){
+    if(gano_batalla(personaje, lista_tope(entrenadores), gim->batalla_id, simulacion)){
       lista_desapilar(entrenadores);
       return GANO;
     }
-  } else if(gano_batalla(personaje, &(gim->lider), gim->batalla_id)){
+  } else if(gano_batalla(personaje, &(gim->lider), gim->batalla_id, simulacion)){
     return COMPLETO_GIMNASIO;
   }
 

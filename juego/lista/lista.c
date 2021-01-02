@@ -249,16 +249,19 @@ void lista_iterador_destruir(lista_iterador_t* iterador){
 /*
     Libera recursivamente la memoria de todos los nodos enlazados que le siguen, incluyéndose a él mismo.
 */
-void lista_destruir_nodos(nodo_t* nodo){
+void lista_destruir_nodos(nodo_t* nodo, lista_liberar_elemento destructor){
     if(nodo){
-        lista_destruir_nodos(nodo->siguiente);
+        lista_destruir_nodos(nodo->siguiente, destructor);
+        if(destructor){
+          destructor(nodo->elemento);
+        }
         free(nodo);
     }
 }
 
-void lista_destruir(lista_t* lista){
+void lista_destruir(lista_t* lista, lista_liberar_elemento destructor){
     if(lista){
-        lista_destruir_nodos(lista->nodo_inicio);
+        lista_destruir_nodos(lista->nodo_inicio, destructor);
         free(lista);
     }
 }
