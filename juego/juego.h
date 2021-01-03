@@ -46,6 +46,7 @@ typedef struct juego {
   heap_t* gimnasios;
   personaje_t personaje;
   bool simulacion;
+  bool tomo_prestado_pokemon;
 } juego_t;
 
 int jugar();

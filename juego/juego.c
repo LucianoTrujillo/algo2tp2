@@ -53,23 +53,17 @@ void destruir_juego(juego_t* juego){
 }
 
 menu_t proximo_gimnasio_o_terminar(juego_t* juego){
+  juego->tomo_prestado_pokemon = false;
+  destruir_gimnasio(heap_extraer_raiz(juego->gimnasios));
   if(heap_cantidad(juego->gimnasios) == 0){
     imprimir_consola("felicidades! Sos troesma pokemon");
-    destruir_juego(juego);
-    return FIN;
-  }
-
-  heap_extraer_raiz(juego->gimnasios);
-  if(heap_cantidad(juego->gimnasios) == 0){
-    imprimir_consola("felicidades! Sos troesma pokemon");
-    destruir_juego(juego);
     return FIN;
   } else {
     return GYM;
   }
 }
 
-bool pudo_tomar_prestado_pokemon(juego_t* juego){
+bool tomar_prestado_pokemon(juego_t* juego){
   gimnasio_t* gim_actual = (gimnasio_t*)heap_raiz(juego->gimnasios);
   pokemon_t* pokemones_lider[MAX_POKEMONES];
   size_t cantidad_pokemones_lider = llenar_vector_pokemon_lista(gim_actual->lider.pokemones, pokemones_lider);
@@ -93,7 +87,12 @@ bool pudo_tomar_prestado_pokemon(juego_t* juego){
   }
   
   pokemon_t* pokemon_prestado = lista_elemento_en_posicion(gim_actual->lider.pokemones,(size_t)posicion);
-  arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
+  pokemon_t* nuevo_pokemon = calloc(1, sizeof(pokemon_t));
+  if(!nuevo_pokemon)
+    return false;
+  
+  *nuevo_pokemon = *pokemon_prestado;
+  arbol_insertar(juego->personaje.pokemones_reserva, nuevo_pokemon);
   imprimir_consola("pokemon robado exitosamente... Digo tomado prestado");
   return true;
 }
@@ -192,7 +191,7 @@ menu_t menu_victoria(juego_t* juego){
     "Ir a proximo gimnasio",
     "Robar pokemon de lider"};
 
-  int cantidad_opciones = 3;
+  int cantidad_opciones = juego->tomo_prestado_pokemon ? 2 : 3;
 
   int opcion_elegida = elegir_opcion("VICTORIA", opciones, cantidad_opciones, 0);
 
@@ -203,8 +202,8 @@ menu_t menu_victoria(juego_t* juego){
     case PROXIMO_GIMNASIO:
       return proximo_gimnasio_o_terminar(juego);
     case ROBAR_POKEMON:
-      if(pudo_tomar_prestado_pokemon(juego))
-        cantidad_opciones--;
+      if(tomar_prestado_pokemon(juego))
+        juego->tomo_prestado_pokemon = true;
       return VICTORIA;
       break;
     default:
@@ -288,7 +287,7 @@ void destruir_gimnasio(void* gim){
 
 int inicializar_juego(juego_t* juego){
   juego->simulacion = false;
-  
+  juego->tomo_prestado_pokemon = false;
   memset(juego->personaje.nombre, '\0', MAX_NOMBRE);
 
   juego->personaje.pokemones_reserva = arbol_crear(comparar_pokemones, destruir_pokemon);

@@ -2,27 +2,8 @@ G;Gimnasio de Ciudad Celeste; 15; 3
 L;Misty
 P;Staryu; 50; 40;50;1
 P;Starmie;90; 50;60;2
-P;Starmiea;90; 50;60;70
-P;Starmie;90; 50;60;71
-P;Starmie;90; 50;60;72
-P;Starmie;90; 50;60;73
 E;Dominguera Diana
 P; Goldeen; 40; 50;30;3
-P;Starmiea;90; 50;60;75
-P;Starmie;90; 50;60;76
-P;Starmie;90; 50;60;77
-P;Starmie;90; 50;60;78
 E;NadadorLuis
 P;Horsea;45; 30; 20;4
 P;Shellder;30;20;45;5
-P;Starmiea;90; 50;60;79
-P;Starmie;90; 50;60;80
-P;Starmie;90; 50;60;81
-P;Starmie;90; 50;60;782
-E;xD
-P;dwad;123;32;123;801
-P;dwad;123;32;123;802
-P;dwad;123;32;123;803
-P;dwad;123;32;123;804
-P;dwad;123;32;123;805
-P;dwad;123;32;123;806

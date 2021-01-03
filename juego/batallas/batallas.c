@@ -19,6 +19,7 @@ int funcion_batalla_2(void* pkm_1, void* pkm_2){
 }
 
 int funcion_batalla_3(void* pkm_1, void* pkm_2){
+  return GANO_PRIMERO;
   pokemon_t* pokemon_1 = (pokemon_t*)pkm_1;
   pokemon_t* pokemon_2 = (pokemon_t*)pkm_2;
   return (strcmp(pokemon_1->nombre, pokemon_2->nombre)) < 0 ? GANO_PRIMERO : GANO_SEGUNDO; 
