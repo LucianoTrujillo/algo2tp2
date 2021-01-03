@@ -51,6 +51,7 @@ typedef struct juego {
 int jugar();
 void destruir_pokemon(void* pokemon);
 void destruir_entrenador(void* trainer);
+void destruir_gimnasio(void* gim);
 int comparar_pokemones(void* pokemon_1, void* pokemon_2);
 int comparar_gimnasios(void* gimnasio_1, void* gimnasio_2);
 

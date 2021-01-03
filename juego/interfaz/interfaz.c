@@ -261,6 +261,7 @@ int elegir_opcion(char* menu, char* opciones[MAX_OPCIONES], int cantidad_opcione
         exit(-1);
 			}
     }
+    system("clear");
     mostrar_opciones(menu, opciones, cantidad_opciones, opcion_seleccionada);
   }
 

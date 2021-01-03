@@ -262,13 +262,17 @@ void destruir_entrenador(void* trainer){
     entrenador_t* entrenador = (entrenador_t*)trainer;
     lista_destruir(entrenador->pokemones, destruir_pokemon);
   }
+  free(trainer);
 }
 
 void destruir_gimnasio(void* gim){
-  if(gim){
   gimnasio_t* gimnasio = (gimnasio_t*)gim;
-  lista_destruir(gimnasio->entrenadores, destruir_entrenador);
+  
+  if(gimnasio){
+    lista_destruir(gimnasio->entrenadores, destruir_entrenador);
+    lista_destruir(gimnasio->lider.pokemones, destruir_pokemon);
   }
+  free(gimnasio);
 }
 
 int inicializar_juego(juego_t* juego){
@@ -302,6 +306,7 @@ void destruir_juego(juego_t* juego){
   lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon); 
   arbol_destruir(juego->personaje.pokemones_reserva);
   heap_destruir(juego->gimnasios);
+     
 }
 
 void mostrar_instrucciones(){
@@ -325,10 +330,11 @@ int jugar(){
 
   //mostrar_instrucciones();
   while(menu_actual != FIN){
+    system("clear");
     menu_actual = mostrar_menu(menu_actual, &juego);
   }
 
-  imprimir_consola("Chau! Esperamos verte pronto...");
+  //imprimir_consola("Chau! Esperamos verte pronto...");
   destruir_juego(&juego);
   return EXITO;
 }

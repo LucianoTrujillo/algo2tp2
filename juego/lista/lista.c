@@ -210,7 +210,7 @@ lista_iterador_t* lista_iterador_crear(lista_t* lista){
     if(!lista)
         return NULL;
     
-    lista_iterador_t* iterador = malloc(sizeof(lista_iterador_t));
+    lista_iterador_t* iterador = calloc(1, sizeof(lista_iterador_t));
     
     if(!iterador)
         return NULL;

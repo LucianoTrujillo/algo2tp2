@@ -120,6 +120,7 @@ estado_combate_t batallar(personaje_t personaje, gimnasio_t* gim, bool simulacio
 
   if(!lista_vacia(entrenadores)){
     if(gano_batalla(personaje, lista_tope(entrenadores), gim->batalla_id, simulacion)){
+      destruir_entrenador(lista_tope(entrenadores));
       lista_desapilar(entrenadores);
       return GANO;
     }

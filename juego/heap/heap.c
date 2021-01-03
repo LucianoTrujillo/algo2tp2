@@ -80,7 +80,7 @@ void heap_destruir(heap_t* heap){
     for(int i = 0; i < heap->cantidad; i++)
       heap->heap_destructor(heap->elementos[i]);
   }
-  
+  free(heap->elementos);
   free(heap);
 }
 
@@ -138,7 +138,7 @@ int heap_insertar(heap_t* heap, void* elemento){
   if(!heap)
     return ERROR;
 
-  void* aux = realloc(heap->elementos, sizeof(void*) * heap->cantidad + 1);
+  void* aux = realloc(heap->elementos, sizeof(void*) * (heap->cantidad + 1));
 
   if(!aux)
     return ERROR;

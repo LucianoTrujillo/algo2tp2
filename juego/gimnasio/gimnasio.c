@@ -76,6 +76,7 @@ int posicion_pokemon_con_id(lista_t* pokemones, int id){
   int posicion = 0;
   while(lista_iterador_tiene_siguiente(iterador)){
     if(((pokemon_t*)lista_iterador_elemento_actual(iterador))->id == id){
+      lista_iterador_destruir(iterador);
       return posicion;
     }
     posicion++;
@@ -157,8 +158,10 @@ pantalla_t poke_intercambio(juego_t* juego, int* id_combate, int* id_reserva){
   comparador.id = *id_reserva;
   pokemon_reserva = arbol_buscar(juego->personaje.pokemones_reserva, &comparador);
 
-  char texto[MAX_MENSAJE];
-  sprintf(texto, "Intercambiando %s con %s...", pokemon_combate->nombre, pokemon_reserva->nombre);
+  char texto[MAX_MENSAJE] = "Intercambiando ";
+  strcat(texto, pokemon_combate->nombre);
+  strcat(texto, " con ");
+  strcat(texto, pokemon_reserva->nombre);
   imprimir_consola(texto);
   lista_borrar_de_posicion(pokemones_combate, (size_t)posicion_combate);
   arbol_borrar(pokemones_reserva, &comparador, false);
