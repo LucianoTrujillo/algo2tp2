@@ -43,15 +43,26 @@ menu_t tratar_comenzar(juego_t* juego){
   return GYM;
 }
 
+
+
+void destruir_juego(juego_t* juego){
+  lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon); 
+  arbol_destruir(juego->personaje.pokemones_reserva);
+  heap_destruir(juego->gimnasios);
+     
+}
+
 menu_t proximo_gimnasio_o_terminar(juego_t* juego){
   if(heap_cantidad(juego->gimnasios) == 0){
     imprimir_consola("felicidades! Sos troesma pokemon");
+    destruir_juego(juego);
     return FIN;
   }
 
   heap_extraer_raiz(juego->gimnasios);
   if(heap_cantidad(juego->gimnasios) == 0){
     imprimir_consola("felicidades! Sos troesma pokemon");
+    destruir_juego(juego);
     return FIN;
   } else {
     return GYM;
@@ -302,12 +313,6 @@ int inicializar_juego(juego_t* juego){
   return EXITO;
 }
 
-void destruir_juego(juego_t* juego){
-  lista_destruir(juego->personaje.pokemones_combate, destruir_pokemon); 
-  arbol_destruir(juego->personaje.pokemones_reserva);
-  heap_destruir(juego->gimnasios);
-     
-}
 
 void mostrar_instrucciones(){
   imprimir_consola("bienvenido al mejor juego de pokemon de la historia!");
