@@ -332,13 +332,13 @@ int jugar(){
   if(resultado == ERROR)
     return ERROR;
 
-  //mostrar_instrucciones();
+  mostrar_instrucciones();
   while(menu_actual != FIN){
     system("clear");
     menu_actual = mostrar_menu(menu_actual, &juego);
   }
 
-  //imprimir_consola("Chau! Esperamos verte pronto...");
+  imprimir_consola("Chau! Esperamos verte pronto...");
   destruir_juego(&juego);
   return EXITO;
 }
