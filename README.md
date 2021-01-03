@@ -104,22 +104,15 @@ Aclaracion: Dado que la implementación la Lista, Cola, Pila estan en un mismo T
   - **Lista**: La Lista fue utilizada para guardar los pokemones de combate tanto del entrenador principal como los de los entrenadores y lider. Esto se debe a que se requiere recorrerlos sin eliminarlos (al batallar), con lo cual la opcion mas facil es usar el iterador externo que provee nuestro TDA Lista para recorrerlos sin modificar la lista, y poder recorrerla cuantas veces se desee. 
 
 
+
 ### Modificaciones de los TDAs Existentes
 
 **Lista**: 
--   Se le invirtio la la condicion de corte en el iterador interno para que sea coherente con el de arbol. En ambos casos, la funcion que se aplica sobre los elementos devuelve true si quiere parar y false de lo contrario.
--   Se le agrego una funcion destructora opcional para poder liberar la memoria que ocupan los pokemones en el heap. Para agregar un atributo extra, el destructor se le pasa cuando se llama a la funcion `destruir_lista` en vez de al crearla.
-- tal vez lo de opcional bool en destruir del arbol
+-   Se le invirtio la la condicion de corte en el iterador interno para que sea coherente con el de arbol. Ahora, En ambos casos, la funcion que se aplica sobre los elementos devuelve true si quiere parar y false de lo contrario.
+-   Se le agrego una funcion destructora opcional para poder liberar la memoria que ocupan los pokemones en el heap. Para agregar no un atributo extra al struct, el destructor se le pasa cuando se llama a la funcion `destruir_lista` en vez de al crearla.
 
-### Analisis de complejidad interesantes
-
-Hay ciertas operaciones que se realizan que me llamaron la atencion. Por ejemplo, la destruccion de los gimnasios al finalizar el juego.
-
-_g_: numero de gimnasios
-_e_: numero de entrenadores
-6: numero maximo de pokemones que puede tener un entrenador
-
-para liberal el heap de gimnasios, se recorren todos los gimnasios O(g). Por cada gimnasio, se liberan todos sus entrenadores O(g\*e). Por cada entrenador, se liberan sus pokemones O(g\*e\*6) => O(g*e).
+**Arbol**: 
+- Se agregó un parametro extra `bool destruir_elemento` al `arbol_borrar`, para elegir si tiene que liberar memoria del elemento al removerlo del arbol. esto lo uso cuando hago el intercambio entre pokemones de combate y pokemones de reserva, dado que no creo nuevos pokemones, si no que cruzo las referencias. En la lista no tuve que hacer esa modificacion porque por default no libera memoria del elemento al borrarlo.
 
 
 Licencia
