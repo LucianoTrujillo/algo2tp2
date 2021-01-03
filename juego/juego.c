@@ -87,12 +87,8 @@ bool tomar_prestado_pokemon(juego_t* juego){
   }
   
   pokemon_t* pokemon_prestado = lista_elemento_en_posicion(gim_actual->lider.pokemones,(size_t)posicion);
-  pokemon_t* nuevo_pokemon = calloc(1, sizeof(pokemon_t));
-  if(!nuevo_pokemon)
-    return false;
-  
-  *nuevo_pokemon = *pokemon_prestado;
-  arbol_insertar(juego->personaje.pokemones_reserva, nuevo_pokemon);
+  lista_borrar_de_posicion(gim_actual->lider.pokemones, (size_t)posicion);
+  arbol_insertar(juego->personaje.pokemones_reserva, pokemon_prestado);
   imprimir_consola("pokemon robado exitosamente... Digo tomado prestado");
   return true;
 }
@@ -332,7 +328,7 @@ int jugar(){
   if(resultado == ERROR)
     return ERROR;
 
-  mostrar_instrucciones();
+ // mostrar_instrucciones();
   while(menu_actual != FIN){
     system("clear");
     menu_actual = mostrar_menu(menu_actual, &juego);
