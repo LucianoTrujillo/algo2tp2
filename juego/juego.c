@@ -26,6 +26,8 @@
 #define REINTENTAR_GIMNASIO 1
 #define FINALIZAR_PARTIDA 2
 
+#define TIEMPO_CARGA 7000
+
 typedef enum { INICIO, GYM, BATALLA, VICTORIA, DERROTA, FIN, CANT_MENUS } menu_t;
 typedef menu_t funcion_menu(juego_t* juego);
 
@@ -59,6 +61,8 @@ menu_t proximo_gimnasio_o_terminar(juego_t* juego){
     imprimir_consola("felicidades! Sos troesma pokemon");
     return FIN;
   } else {
+
+    mostrar_barra_carga(TIEMPO_CARGA);
     return GYM;
   }
 }
@@ -234,6 +238,9 @@ menu_t menu_derrota(juego_t* juego){
   }
 }
 
+/*
+  Array de funciones que recibe el juego en cierto estado, lo puede llegar a modificar y devuelve qué menú mostrar a continuación
+*/
 funcion_menu* const nuevo_menu[CANT_MENUS] = {
     menu_inicio,
     menu_gym,
@@ -328,7 +335,9 @@ int jugar(){
   if(resultado == ERROR)
     return ERROR;
 
- // mostrar_instrucciones();
+
+  mostrar_instrucciones();
+  mostrar_barra_carga(TIEMPO_CARGA);
   while(menu_actual != FIN){
     system("clear");
     menu_actual = mostrar_menu(menu_actual, &juego);

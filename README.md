@@ -58,30 +58,25 @@ Como todo programa en C, cuenta con un main.c como punto de entrada donde luego 
 El código del juego se encuentra en la carpeta `/juego`. 
 En esta, se encuentran varias carpetas, cada una contiene la lógica de una parte del juego:
 
-  - El `juego.c` y `juego.h` conforman el TDA Juego, el cual contiene las primitivas crear, jugar y destruir.
-    Este TDA se encarga de manejar el flujo del juego, decidiendo que opciones puede tomar el usuario
-    y delegando la funcionalidad a otros lugares.
+  - Dentro de la carpeta ` /juego` se encuentra el archivo `juego.c`, quien se encarga de manejar el flujo del juego, decidiendo que opciones puede tomar el usuario y delegando la funcionalidad a otros modulos.
 
-    este TDA Es muy imporante, dado que le da la "forma" al juego, guiando al usuario a través de los menús
-    sin tener la lógica de que es lo que se hace en cada uno.
-
-  - Dentro de la carpeta ` /inicio` se encuentra la lógica de lectura de archivos correspondiente al
+  - Dentro de la carpeta ` /juego/inicio` se encuentra la lógica de lectura de archivos correspondiente al
     entrenador que usa el usuario (el personaje principal), además de la correspondiente a los gimnasios.
 
-  - Dentro de la carpeta `/gimnasio` se encuentra la lógica relacionada a lo que se puede hacer previo a combatir con un entrenador:
+  - Dentro de la carpeta `/juego/gimnasio` se encuentra la lógica relacionada a lo que se puede hacer previo a combatir con un entrenador:
     ver la información de tu entrenador, ver la información del gimnasio y reorganizar tu pokedex.
 
-  - Dentro de la carpeta `/batalla` se encuentra la lógica relacionada a los enfrentamientos con los entrenadores y sus pokemon:
+  - Dentro de la carpeta `/juego/batalla` se encuentra la lógica relacionada a los enfrentamientos con los entrenadores y sus pokemon:
     contiene la lógica de los combates entre pokemones y Se encarga de controlar el flujo de una batalla, cuando pierde, y cuando gana. 
   
-  - Dentro de la carpeta `/interfaz` se encuentra la lógica relacionada a la interacción entre el usuario y el juego:
+  - Dentro de la carpeta `/juego/interfaz` se encuentra la lógica relacionada a la interacción entre el usuario y el juego:
     imprimir los mensajes, mostrar los menús, manejo de elección de opciones. 
 
 ### Utilizacion y explicacion del uso de los TDAS
 
 Las estructuras usadas fueron: **Lista, Cola, Pila, Árbol Binario de Búsqueda, Árbol Heap básico**.
 
-Aclaracion: Dado que la implementación la Lista, Cola, Pila estan en un mismo TDA, con lo cual hay solapamiento.
+Aclaracion: Dado que la implementación la Lista, Cola, Pila estan en un mismo TDA, hay solapamiento. Sin embargo se utilizan las primitivas adecuadas para explicitar ciertas caracteristicas.
 
   - **Heap**: El Heap fue usado para guardar los gimnasios a los cuales se enfrenta el entrenador.
     Dado que tienen que ir apareciendo de mas fácil a más dificil, es lógico usar una estructura de este tipo,
@@ -109,13 +104,15 @@ Aclaracion: Dado que la implementación la Lista, Cola, Pila estan en un mismo T
 
 **Lista**: 
 -   Se le invirtio la la condicion de corte en el iterador interno para que sea coherente con el de arbol. Ahora, En ambos casos, la funcion que se aplica sobre los elementos devuelve true si quiere parar y false de lo contrario.
--   Se le agrego una funcion destructora opcional para poder liberar la memoria que ocupan los pokemones en el heap. Para agregar no un atributo extra al struct, el destructor se le pasa cuando se llama a la funcion `destruir_lista` en vez de al crearla.
+-   Se le agrego una funcion destructora opcional para poder liberar la memoria que ocupan los pokemones en el heap. Para no agregar un atributo extra al struct, el destructor se le pasa cuando se llama a la funcion `destruir_lista` en vez de al crearla.
 
 **Arbol**: 
 - Se agregó un parametro extra `bool destruir_elemento` al `arbol_borrar`, para elegir si tiene que liberar memoria del elemento al removerlo del arbol. esto lo uso cuando hago el intercambio entre pokemones de combate y pokemones de reserva, dado que no creo nuevos pokemones, si no que cruzo las referencias. En la lista no tuve que hacer esa modificacion porque por default no libera memoria del elemento al borrarlo.
 
+### Nota importante sobre implementacion: 
+Dado el enunciado del PDF, se menciona en reiteradas ocaciones (que fueron mostradas en otros medios) que la estructura donde se guardan los pokemon de reserva es diferente a los de combate, con lo cual no es que los de combate referencian a ciertos pokemon de reserva. Un pokemon puede estar en solo una de las dos y ser intercambiado cuantas veces se lo desee. Al ser intercambiado, no se destruye ni copian los datos, simplemente se cruzan las referencias del pokemon existente.
 
-Licencia
+### Licencia
 ----
 
 Derechos reservados © Luchito
